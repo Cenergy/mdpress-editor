@@ -2,7 +2,7 @@
 import nodeResolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
-import { terser } from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import builtins from 'rollup-plugin-node-builtins';
 import pkg from './package.json';
 const path = require('path');
@@ -15,15 +15,31 @@ const outer = `${pkg.name} v${pkg.version}`;
 
 const banner = `/*!\n * ${outer}\n  */`;
 const intro = `console.log('${outer}')`;
-const external = ['highlight.js'];
+const external = [
+    'highlight.js',
+    'monaco-editor',
+    'mermaid',
+    'shiki',
+    'katex',
+    'markdown-it',
+    'dayjs',
+    'swiper',
+    'viewerjs',
+    'x-data-spreadsheet',
+    'prettier',
+    'file-saver',
+    'emoji-mart',
+    'markmap-lib',
+    'markmap-view',
+    'markmap-common'
+];
 const plugins = [
     json(),
     nodeResolve(),
-    commonjs(),
+    commonjs({
+        transformMixedEsModules: true
+    }),
     builtins()
-    // babel({
-    //     // exclude: ['node_modules/**']
-    // })
 ];
 
 function getEntry() {
@@ -33,7 +49,22 @@ function getEntry() {
 const namespace = 'mdpress';
 
 const globals = {
-    'highlight.js': 'hljs'
+    'highlight.js': 'hljs',
+    'monaco-editor': 'monaco',
+    'mermaid': 'mermaid',
+    'shiki': 'shiki',
+    'katex': 'katex',
+    'markdown-it': 'markdownit',
+    'dayjs': 'dayjs',
+    'swiper': 'Swiper',
+    'viewerjs': 'Viewer',
+    'x-data-spreadsheet': 'Spreadsheet',
+    'prettier': 'prettier',
+    'file-saver': 'saveAs',
+    'emoji-mart': 'EmojiMart',
+    'markmap-lib': 'markmap',
+    'markmap-view': 'markmap',
+    'markmap-common': 'markmap'
 };
 
 let outs = [

@@ -1,4 +1,4 @@
-# mdpress-editor
+# mdpress-monaco-editor
 
 A simple markdown editor base [monaco-editor](https://github.com/microsoft/monaco-editor) and [markdown-it](https://github.com/markdown-it/markdown-it)
 
@@ -29,18 +29,18 @@ A simple markdown editor base [monaco-editor](https://github.com/microsoft/monac
 ### NPM
 
 ```sh
-npm i mdpress-editor
+npm i mdpress-monaco-editor
 #or
-yarn add mdpress-editor
+yarn add mdpress-monaco-editor
 
 ```
 
 ### CDN 
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/mdpress-editor/index.css">
+<link rel="stylesheet" href="https://unpkg.com/mdpress-monaco-editor/index.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-<script type="text/javascript" src="https://unpkg.com/mdpress-editor/dist/mdpress-editor.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/mdpress-monaco-editor/dist/mdpress-monaco-editor.js"></script>
 ```
 
 ## Notes

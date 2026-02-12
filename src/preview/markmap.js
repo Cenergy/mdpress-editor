@@ -1,6 +1,7 @@
 import { Transformer } from 'markmap-lib';
+import { Markmap } from 'markmap-view';
 import { getToastr } from '../toast';
-import { getMarkMap } from '../deps';
+// import { getMarkMap } from '../deps';
 const transformer = new Transformer();
 
 const FLAG = '[[markmap]]';
@@ -39,14 +40,14 @@ export function initMarkMap(dom) {
     if (!els.length) {
         return;
     }
-    const markmap = getMarkMap();
-    if (!markmap) {
-        const message = 'not find markmap,please registerMarkMap';
-        console.error(message);
-        getToastr().error(message);
-        return;
-    }
-    const { Markmap } = markmap;
+    // const markmap = getMarkMap();
+    // if (!markmap) {
+    //     const message = 'not find markmap,please registerMarkMap';
+    //     console.error(message);
+    //     getToastr().error(message);
+    //     return;
+    // }
+    // const { Markmap } = markmap;
     els.forEach(el => {
         if (el.dataset.inited) {
             return;

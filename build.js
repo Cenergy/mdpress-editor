@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const fileName = 'mdpress-editor';
+const fileName = 'mdpress-monaco-editor';
 const p = path.join(__dirname, `./../mdpress/src/lib/${fileName}`);
 if (fs.existsSync(p)) {
     const p1 = path.join(__dirname, `./dist/${fileName}.min.js`);

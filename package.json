@@ -1,25 +1,32 @@
 {
-  "name": "mdpress-editor",
-  "version": "0.33.0",
+  "name": "mdpress-monaco-editor",
+  "version": "0.0.1",
   "description": "markdown editor base monaco",
-  "main": "./dist/mdpress-editor.js",
-  "module": "./index.js",
+  "main": "./dist/mdpress-monaco-editor.js",
+  "module": "./dist/mdpress-monaco-editor.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/mdpress-monaco-editor.mjs",
+      "require": "./dist/mdpress-monaco-editor.js"
+    }
+  },
   "scripts": {
     "lint": "eslint ./src/**/*.js",
     "dev": "npm run lint && cross-env NODE_ENV=dev  rollup -w -c --bundleConfigAsCjs",
     "build": "npm run lint && cross-env NODE_ENV=prd  rollup -c --bundleConfigAsCjs && node build.js",
+    "build:vite": "vite build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deyihu/mdeditor.git"
+    "url": "git+https://github.com/Cenergy/mdeditor.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/deyihu/mdeditor/issues"
+    "url": "https://github.com/Cenergy/mdeditor/issues"
   },
-  "homepage": "https://github.com/deyihu/mdeditor#readme",
+  "homepage": "https://github.com/Cenergy/mdeditor#readme",
   "files": [
     "src/",
     "theme/",
@@ -41,7 +48,9 @@
     "eslint-plugin-standard": "^4.0.1",
     "rollup": "^3.29.1",
     "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-terser": "^7.0.2"
+    "@rollup/plugin-terser": "^0.4.3",
+    "vite": "^4.4.9",
+    "terser": "^5.19.2"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.1.2",
