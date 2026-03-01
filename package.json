@@ -38,6 +38,7 @@
     "@rollup/plugin-commonjs": "^25.0.4",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.2.1",
+    "@rollup/plugin-terser": "^0.4.3",
     "@types/markdown-it": "^13.0.2",
     "cross-env": "^5.1.4",
     "eslint": "^6.2.2",
@@ -48,9 +49,8 @@
     "eslint-plugin-standard": "^4.0.1",
     "rollup": "^3.29.1",
     "rollup-plugin-node-builtins": "^2.1.2",
-    "@rollup/plugin-terser": "^0.4.3",
-    "vite": "^4.4.9",
-    "terser": "^5.19.2"
+    "terser": "^5.19.2",
+    "vite": "^4.4.9"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.1.2",
