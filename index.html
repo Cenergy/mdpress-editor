@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mdeditor test</title>
+<style type="text/css">
+    html,
+    body {
+        margin: 0px;
+        height: 100%;
+        width: 100%;
+        font-family: 微软雅黑;
+        /* overflow: hidden; */
+    }
+
+    .container {
+        width: 90%;
+        height: 100%;
+        margin: auto;
+        /* margin-top: 10px; */
+    }
+
+    .red {
+        color: red !important;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css"
+    crossorigin="anonymous">
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/an-old-hope.min.css"> -->
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css"> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.5/viewer.min.css"
+    crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/10.2.0/swiper-bundle.min.css"
+    crossorigin="anonymous">
+
+<link rel="stylesheet"
+    href="https://microget-1300406971.cos.ap-shanghai.myqcloud.com/glicon/lib/x-data-spreadsheet/xspreadsheet.css"
+    crossorigin="anonymous">
+
+<link rel="stylesheet" href="./index.css">
+<script
+    src="https://microget-1300406971.cos.ap-shanghai.myqcloud.com/glicon/lib/shiki/dist/index.jsdelivr.iife.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.9/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.5/viewer.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.4.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/10.2.0/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script
+    src="https://microget-1300406971.cos.ap-shanghai.myqcloud.com/glicon/lib/x-data-spreadsheet/xspreadsheet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.17.1/flowchart.min.js"></script>
+<script src="./lib/qrcode.min.js"></script>
+<script src="./lib/prettier/standalone.js"></script>
+<script src="./lib/prettier/plugins/acorn.js"></script>
+<!-- <script src="./lib/prettier/plugins/angular.js"></script> -->
+<script src="./lib/prettier/plugins/babel.js"></script>
+<script src="./lib/prettier/plugins/estree.js"></script>
+<!-- <script src="./lib/prettier/plugins/flow.js"></script> -->
+<!-- <script src="./lib/prettier/plugins/glimmer.js"></script> -->
+<!-- <script src="./lib/prettier/plugins/graphql.js"></script> -->
+<script src="./lib/prettier/plugins/html.js"></script>
+<script src="./lib/prettier/plugins/markdown.js"></script>
+<!-- <script src="./lib/prettier/plugins/meriyah.js"></script> -->
+<script src="./lib/prettier/plugins/postcss.js"></script>
+<script src="./lib/prettier/plugins/typescript.js"></script>
+<!-- <script src="./lib/prettier/plugins/yaml.js"></script> -->
+<script type="module">
+    import * as mdpress from './index.js';
+    window.mdpress = mdpress;
+</script>
+<script type="text/javascript" src="./base.js"></script>
+<script>
+    var require = { paths: { vs: './lib/monaco-editor/min/vs' } };
+</script>
+<script src="./lib/monaco-editor/min/vs/loader.js"></script>
+<!-- <script src="./lib/monaco-editor/min/vs/editor/editor.main.nls.js"></script> -->
+<!-- <script src="./lib/monaco-editor/min/vs/editor/editor.main.js"></script> -->
+
+<body>
+
+    <div id="map" class="container"></div>
+
+    <script>
+
+        let mEditor;
+        function createEditor() {
+            mEditor = new mdpress.MDEditor('#map', {
+                theme: 'serene-rose',
+                monacoOptions: {
+                    // language: 'markdown-math'
+                    // theme: 'vs-dark'
+                }
+            })
+            loadData();
+            customIcons();
+        }
+
+        function loadData() {
+            fetch('./test/data.md').then(res => res.text()).then(text => {
+                mEditor.setValue(text);
+            })
+        }
+
+        function customIcons() {
+            const dom = document.createElement('div');
+            dom.innerHTML = '自定义';
+            dom.style.fontSize = '12px';
+            dom.style.lineHeight = '24px';
+            dom.style.cursor = 'pointer';
+            dom.onclick = () => {
+                alert('自定义图标');
+            }
+            mEditor.addToolIcon({
+                dom,
+                position: 'left',
+                index: 0
+            })
+        }
+
+        require(['vs/editor/editor.main'], function () {
+            createEditor();
+        });
+    </script>
+</body>
+
+</html>

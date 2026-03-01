@@ -55,7 +55,7 @@ export default defineConfig({
     },
     commonjsOptions: {
       // 关键配置：允许处理混合了 ESM 和 CommonJS 的模块
-      transformMixedEsModules: true,
+      transformMixedEsModules: true
     },
     // 压缩配置
     minify: 'terser',

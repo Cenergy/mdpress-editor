@@ -12,9 +12,9 @@
   },
   "scripts": {
     "lint": "eslint ./src/**/*.js",
-    "dev": "npm run lint && cross-env NODE_ENV=dev  rollup -w -c --bundleConfigAsCjs",
-    "build": "npm run lint && cross-env NODE_ENV=prd  rollup -c --bundleConfigAsCjs && node build.js",
-    "build:vite": "vite build",
+    "dev": "vite",
+    "build": "npm run lint && vite build",
+    "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -65,7 +65,7 @@
     "highlight.js": "^11.8.0",
     "html-to-image": "^1.11.11",
     "katex": "^0.6.0",
-    "markdown-it": "^13.0.1",
+    "markdown-it": "^14.1.0",
     "markdown-it-anchor": "^8.6.7",
     "markdown-it-container": "^3.0.0",
     "markdown-it-emoji": "^2.0.2",

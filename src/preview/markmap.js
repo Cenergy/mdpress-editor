@@ -1,6 +1,6 @@
 import { Transformer } from 'markmap-lib';
 import { Markmap } from 'markmap-view';
-import { getToastr } from '../toast';
+// import { getToastr } from '../toast';
 // import { getMarkMap } from '../deps';
 const transformer = new Transformer();
 
