@@ -25,11 +25,10 @@ export default defineConfig({
         'viewerjs',
         'x-data-spreadsheet',
         'prettier',
-        'file-saver'
-        // 'emoji-mart'
-        // 'markmap-lib',
-        // 'markmap-view',
-        // 'markmap-common'
+        'file-saver',
+        'qrcode',
+        'flowchart.js',
+        'xlsx'
       ],
       output: {
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
@@ -45,11 +44,10 @@ export default defineConfig({
           'viewerjs': 'Viewer',
           'x-data-spreadsheet': 'Spreadsheet',
           'prettier': 'prettier',
-          'file-saver': 'saveAs'
-          // 'emoji-mart': 'EmojiMart'
-          // 'markmap-lib': 'markmap',
-          // 'markmap-view': 'markmap',
-          // 'markmap-common': 'markmap'
+          'file-saver': 'saveAs',
+          'qrcode': 'QRCode',
+          'flowchart.js': 'flowchart',
+          'xlsx': 'XLSX'
         },
         // 解决 UMD 模式下可能出现的 require 报错问题
         exports: 'named'
