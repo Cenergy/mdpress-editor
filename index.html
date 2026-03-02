@@ -55,116 +55,22 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.17.1/flowchart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="/lib/prettier/standalone.js"></script>
-<script src="/lib/prettier/plugins/acorn.js"></script>
-<!-- <script src="/lib/prettier/plugins/angular.js"></script> -->
-<script src="/lib/prettier/plugins/babel.js"></script>
-<script src="/lib/prettier/plugins/estree.js"></script>
-<!-- <script src="/lib/prettier/plugins/flow.js"></script> -->
-<!-- <script src="/lib/prettier/plugins/glimmer.js"></script> -->
-<!-- <script src="/lib/prettier/plugins/graphql.js"></script> -->
-<script src="/lib/prettier/plugins/html.js"></script>
-<script src="/lib/prettier/plugins/markdown.js"></script>
-<!-- <script src="/lib/prettier/plugins/meriyah.js"></script> -->
-<script src="/lib/prettier/plugins/postcss.js"></script>
-<script src="/lib/prettier/plugins/typescript.js"></script>
-<!-- <script src="/lib/prettier/plugins/yaml.js"></script> -->
-<script type="module">
-        import * as mdpress from './index.js';
-        import * as monaco from 'monaco-editor';
-        import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
-        import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
-        import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
-        import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
-        import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
-
-        self.MonacoEnvironment = {
-            getWorker(_, label) {
-                if (label === 'json') {
-                    return new jsonWorker();
-                }
-                if (label === 'css' || label === 'scss' || label === 'less') {
-                    return new cssWorker();
-                }
-                if (label === 'html' || label === 'handlebars' || label === 'razor') {
-                    return new htmlWorker();
-                }
-                if (label === 'typescript' || label === 'javascript') {
-                    return new tsWorker();
-                }
-                return new editorWorker();
-            }
-        };
-
-        window.mdpress = mdpress;
-        // Inject monaco
-        mdpress.registerMonaco(monaco);
-
-        // Register plugins
-        if (window.Swiper) mdpress.registerSwiper(window.Swiper);
-        console.log("🚀 ~ window.QRCode:", window.QRCode)
-        if (window.QRCode) mdpress.registerQRCode(window.QRCode);
-        if (window.mermaid) mdpress.registerMermaid(window.mermaid);
-        if (window.XLSX) mdpress.registerXLSX(window.XLSX);
-        if (window.x_spreadsheet) mdpress.registerX_spreadsheet(window.x_spreadsheet);
-        if (window.flowchart) mdpress.registerFlowChart(window.flowchart);
-        
-        if (typeof prettier !== 'undefined' && typeof prettierPlugins !== 'undefined') {
-            prettier.prettierPlugins = prettierPlugins;
-            mdpress.registerPrettier(prettier);
-        }
-    </script>
-    
-    <body>
-
-    <div id="map" class="container"></div>
-
-    <script>
-
-        let mEditor;
-        function createEditor() {
-            mEditor = new mdpress.MDEditor('#map', {
-                theme: 'serene-rose',
-                monacoOptions: {
-                    // language: 'markdown-math'
-                    // theme: 'vs-dark'
-                }
-            })
-            loadData();
-            customIcons();
-        }
-
-        function loadData() {
-            fetch('./test/data.md').then(res => res.text()).then(text => {
-                mEditor.setValue(text);
-            })
-        }
-
-        function customIcons() {
-            const dom = document.createElement('div');
-            dom.innerHTML = '自定义';
-            dom.style.fontSize = '12px';
-            dom.style.lineHeight = '24px';
-            dom.style.cursor = 'pointer';
-            dom.onclick = () => {
-                alert('自定义图标');
-            }
-            mEditor.addToolIcon({
-                dom,
-                position: 'left',
-                index: 0
-            })
-        }
-        
-        // Wait for other resources (if any) or just start
-        // Since we moved monaco loading to the module script above, we can just call createEditor
-        // providing we ensure DOM is ready.
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', createEditor);
-        } else {
-            createEditor();
-        }
-    </script>
+<script src="/test/lib/prettier/standalone.js"></script>
+<script src="/test/lib/prettier/plugins/acorn.js"></script>
+<!-- <script src="/test/lib/prettier/plugins/angular.js"></script> -->
+<script src="/test/lib/prettier/plugins/babel.js"></script>
+<script src="/test/lib/prettier/plugins/estree.js"></script>
+<!-- <script src="/test/lib/prettier/plugins/flow.js"></script> -->
+<!-- <script src="/test/lib/prettier/plugins/glimmer.js"></script> -->
+<!-- <script src="/test/lib/prettier/plugins/graphql.js"></script> -->
+<script src="/test/lib/prettier/plugins/html.js"></script>
+<script src="/test/lib/prettier/plugins/markdown.js"></script>
+<!-- <script src="/test/lib/prettier/plugins/meriyah.js"></script> -->
+<script src="/test/lib/prettier/plugins/postcss.js"></script>
+<script src="/test/lib/prettier/plugins/typescript.js"></script>
+<!-- <script src="/test/lib/prettier/plugins/yaml.js"></script> -->
+<script type="module" src="/test/main.js"></script>
+<body>
+    <div id="app"></div>
 </body>
-
 </html>
