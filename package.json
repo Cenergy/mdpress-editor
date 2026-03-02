@@ -48,6 +48,7 @@
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
+    "less": "^4.5.1",
     "rollup": "^3.29.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "terser": "^5.19.2",
@@ -64,6 +65,7 @@
     "fetch-scheduler": "^0.4.0",
     "file-saver": "^2.0.5",
     "filednd": "^0.8.0",
+    "flowchart.js": "^1.18.0",
     "highlight.js": "^11.8.0",
     "html-to-image": "^1.11.11",
     "katex": "^0.6.0",
@@ -84,9 +86,11 @@
     "morphdom": "^2.7.4",
     "prettier": "^3.0.3",
     "print-js": "^1.6.0",
+    "qrcode": "^1.5.4",
     "shiki": "^0.14.3",
     "swiper": "^10.2.0",
     "viewerjs": "^1.11.5",
-    "x-data-spreadsheet": "^1.1.9"
+    "x-data-spreadsheet": "^1.1.9",
+    "xlsx": "^0.18.5"
   }
 }

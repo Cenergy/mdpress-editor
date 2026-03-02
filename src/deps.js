@@ -1,5 +1,33 @@
 
+import * as monaco from 'monaco-editor';
+import hljs from 'highlight.js';
+import * as prettier from 'prettier/standalone';
+import * as prettierPluginBabel from 'prettier/plugins/babel';
+import * as prettierPluginEstree from 'prettier/plugins/estree';
+import * as prettierPluginHtml from 'prettier/plugins/html';
+import * as prettierPluginMarkdown from 'prettier/plugins/markdown';
+import * as prettierPluginPostcss from 'prettier/plugins/postcss';
+import * as prettierPluginTypescript from 'prettier/plugins/typescript';
+
+import Swiper from 'swiper';
+import QRCode from 'qrcode';
+import mermaid from 'mermaid';
+import * as XLSX from 'xlsx';
+import X_spreadsheet from 'x-data-spreadsheet';
+import flowchart from 'flowchart.js';
+import { getHighlighter } from 'shiki';
+import * as markmapCommon from 'markmap-common';
+import * as markmapView from 'markmap-view';
+import * as markmapLib from 'markmap-lib';
+
+// Shiki initialization
 let shikiHighlighter;
+getHighlighter({ theme: 'nord' }).then(highlighter => {
+    shikiHighlighter = highlighter;
+}).catch(err => {
+    console.warn('Failed to load shiki highlighter', err);
+});
+
 export function registerShikiHighlighter(highlighter) {
     shikiHighlighter = highlighter;
 }
@@ -8,95 +36,82 @@ export function getShikiHighlighter() {
     return shikiHighlighter;
 }
 
-let monaco;
-export function registerMonaco(monacoObj) {
-    monaco = monacoObj;
-}
-
+// Monaco
+export function registerMonaco() {}
 export function getMonaco() {
-    return monaco;
+    return window.monaco || monaco;
 }
 
-let hlsjs;
-export function registerHightLight(hls) {
-    hlsjs = hls;
-}
-
+// Highlight.js
+export function registerHightLight() {}
 export function getHightLight() {
-    return hlsjs;
+    return window.hljs || hljs;
 }
 
-let prettierjs;
-export function registerPrettier(prettier) {
-    prettierjs = prettier;
-}
+// Prettier
+const prettierPlugins = [
+    prettierPluginBabel,
+    prettierPluginEstree,
+    prettierPluginHtml,
+    prettierPluginMarkdown,
+    prettierPluginPostcss,
+    prettierPluginTypescript
+];
 
+const prettierObj = {
+    ...prettier,
+    prettierPlugins
+};
+
+export function registerPrettier() {}
 export function getPrettier() {
-    return prettierjs;
+    return window.prettier || prettierObj;
 }
 
-let markMapJS;
-export function registerMarkMap(markmap) {
-    markMapJS = markmap;
-}
+// Markmap
+const markmapObj = {
+    ...markmapCommon,
+    ...markmapView,
+    ...markmapLib
+};
 
+export function registerMarkMap() {}
 export function getMarkMap() {
-    return markMapJS;
+    return window.markmap || markmapObj;
 }
 
-let swiperJS;
-
-export function registerSwiper(swiper) {
-    swiperJS = swiper;
-}
-
+// Swiper
+export function registerSwiper() {}
 export function getSwiper() {
-    return swiperJS;
+    return window.Swiper || Swiper;
 }
 
-let qrcodeJS;
-
-export function registerQRCode(qrcode) {
-    qrcodeJS = qrcode;
-}
-
+// QRCode
+export function registerQRCode() {}
 export function getQRCode() {
-    return qrcodeJS;
+    return window.QRCode || QRCode;
 }
 
-let mermaidJS;
-export function registerMermaid(mermaid) {
-    mermaidJS = mermaid;
-}
-
+// Mermaid
+export function registerMermaid() {}
 export function getMermaid() {
-    return mermaidJS;
+    return window.mermaid || mermaid;
 }
 
-let xlsxJS;
-export function registerXLSX(xlsx) {
-    xlsxJS = xlsx;
-}
-
+// XLSX
+export function registerXLSX() {}
 export function getXLSX() {
-    return xlsxJS;
+    return window.XLSX || XLSX;
 }
 
-let x_spreadsheetJS;
-export function registerX_spreadsheet(x_spreadsheet) {
-    x_spreadsheetJS = x_spreadsheet;
-}
-
+// X_spreadsheet
+export function registerX_spreadsheet() {}
 export function getX_spreadsheet() {
-    return x_spreadsheetJS;
+    return window.x_spreadsheet || X_spreadsheet;
 }
 
-let flowChartJS;
-
-export function registerFlowChart(flowChart) {
-    flowChartJS = flowChart;
-}
-
+// FlowChart
+export function registerFlowChart() {}
 export function getFlowChart() {
-    return flowChartJS;
+    return window.flowchart || flowchart;
 }

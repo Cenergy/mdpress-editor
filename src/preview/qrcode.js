@@ -22,16 +22,22 @@ export function initQRCode(dom) {
         const text = el.textContent;
         el.innerHTML = '';
         // console.log(text);
-        const qrcode = new QRCode(el, {
-            text,
+        const canvas = document.createElement('canvas');
+        el.appendChild(canvas);
+        QRCode.toCanvas(canvas, text, {
             width: 128,
-            height: 128,
-            colorDark: '#000000',
-            colorLight: '#ffffff',
-            correctLevel: QRCode.CorrectLevel.H
+            margin: 0,
+            color: {
+                dark: '#000000',
+                light: '#ffffff'
+            },
+            errorCorrectionLevel: 'H'
+        }, function (error) {
+            if (error) console.error(error);
         });
 
-        swipers.push(qrcode);
+        el.dataset.inited = 'true';
+        swipers.push(canvas);
     });
     return swipers;
 }
