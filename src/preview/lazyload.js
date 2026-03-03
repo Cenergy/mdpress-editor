@@ -1,7 +1,7 @@
 // const IMG_TAG = '<img';
 const IFRAME_TAG = '<iframe';
 
-export function lazyLoad(html, mdEditor) {
+export function lazyload(html, mdEditor) {
     // if (html.indexOf(IMG_TAG) > -1) {
     //     const seg = html.split(IMG_TAG);
     //     html = seg.join(`${IMG_TAG} loading="lazy" `).toString();

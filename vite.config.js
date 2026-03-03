@@ -28,7 +28,14 @@ export default defineConfig({
         'file-saver',
         'qrcode',
         'flowchart.js',
-        'xlsx'
+        'xlsx',
+        'html-to-image',
+        'print-js',
+        'markmap-common',
+        'markmap-lib',
+        'markmap-view',
+        'emoji-mart',
+        '@emoji-mart/data'
       ],
       output: {
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
@@ -47,7 +54,14 @@ export default defineConfig({
           'file-saver': 'saveAs',
           'qrcode': 'QRCode',
           'flowchart.js': 'flowchart',
-          'xlsx': 'XLSX'
+          'xlsx': 'XLSX',
+          'html-to-image': 'htmlToImage',
+          'print-js': 'printJS',
+          'markmap-common': 'markmapCommon',
+          'markmap-lib': 'markmapLib',
+          'markmap-view': 'markmapView',
+          'emoji-mart': 'EmojiMart',
+          '@emoji-mart/data': 'EmojiMartData'
         },
         // 解决 UMD 模式下可能出现的 require 报错问题
         exports: 'named'
@@ -64,7 +78,8 @@ export default defineConfig({
         drop_console: false,
         drop_debugger: true
       }
-    }
+    },
+    copyPublicDir: false
   },
   resolve: {
     alias: {

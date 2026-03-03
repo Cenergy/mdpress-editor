@@ -1,3 +1,4 @@
+import 'highlight.js/styles/github.css';
 import MarkdownIt from 'markdown-it';
 import emojiPlugin from 'markdown-it-emoji';
 import markdownAnchor from 'markdown-it-anchor';

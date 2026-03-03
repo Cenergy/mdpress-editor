@@ -29,13 +29,14 @@ import printJS from 'print-js';
 import { toBlob } from 'html-to-image';
 import { initExcel } from './preview/excel';
 import { exportMarkMapHTML } from './exportmarkmap';
-import { lazyLoad } from './preview/layzload';
+import { lazyload } from './preview/lazyload';
 // import emojiData from '@emoji-mart/data'
 import { Picker } from 'emoji-mart';
 import { setHeadLineNumber } from './preview/headlinenumber';
 import { initFlowChart } from './preview/flowchart';
 // import { domDiff } from './diff';
 
+import { ToolIcon } from './toolicon';
 const THEME_ID = 'mdeditor_theme_style';
 const THEMECACHE = new Map();
 const md = createMarkdown();
@@ -611,7 +612,7 @@ export class MDEditor extends Eventable(Base) {
         checkInclude(value, (text) => {
             this.mdText = text;
             let html = md.render(text);
-            html = lazyLoad(html, this);
+            html = lazyload(html, this);
             const dom = this.previewDom;
 
             if (dom.childNodes.length === 0) {
@@ -938,6 +939,12 @@ export class MDEditor extends Eventable(Base) {
 
     isDark() {
         return this.dark;
+    }
+
+    addToolIcon(options) {
+        const toolIcon = new ToolIcon(options);
+        toolIcon.addTo(this);
+        return toolIcon;
     }
 }
 

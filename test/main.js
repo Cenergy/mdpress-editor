@@ -7,22 +7,28 @@ import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 import * as mdpress from '../index.js';
 
+import 'highlight.js/styles/atom-one-dark.min.css';
+import 'katex/dist/katex.min.css';
+import 'viewerjs/dist/viewer.min.css';
+import 'swiper/css/bundle';
+import 'x-data-spreadsheet/dist/xspreadsheet.css';
+
 // Monaco Environment Setup
+const workers = {
+    json: jsonWorker,
+    css: cssWorker,
+    scss: cssWorker,
+    less: cssWorker,
+    html: htmlWorker,
+    handlebars: htmlWorker,
+    razor: htmlWorker,
+    typescript: tsWorker,
+    javascript: tsWorker
+};
+
 self.MonacoEnvironment = {
     getWorker(_, label) {
-        if (label === 'json') {
-            return new jsonWorker();
-        }
-        if (label === 'css' || label === 'scss' || label === 'less') {
-            return new cssWorker();
-        }
-        if (label === 'html' || label === 'handlebars' || label === 'razor') {
-            return new htmlWorker();
-        }
-        if (label === 'typescript' || label === 'javascript') {
-            return new tsWorker();
-        }
-        return new editorWorker();
+        return new (workers[label] || editorWorker)();
     }
 };
 

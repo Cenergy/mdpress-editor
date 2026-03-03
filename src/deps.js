@@ -22,7 +22,18 @@ import * as markmapLib from 'markmap-lib';
 
 // Shiki initialization
 let shikiHighlighter;
-getHighlighter({ theme: 'nord' }).then(highlighter => {
+const isDev = import.meta.env.DEV;
+const shikiPaths = isDev ? {
+    themes: '/node_modules/shiki/themes/',
+    languages: '/node_modules/shiki/languages/',
+    wasm: '/node_modules/shiki/dist/'
+} : {
+    themes: 'https://cdn.jsdelivr.net/npm/shiki@0.14.3/themes/',
+    languages: 'https://cdn.jsdelivr.net/npm/shiki@0.14.3/languages/',
+    wasm: 'https://cdn.jsdelivr.net/npm/shiki@0.14.3/dist/'
+};
+
+getHighlighter({ theme: 'nord', paths: shikiPaths }).then(highlighter => {
     shikiHighlighter = highlighter;
 }).catch(err => {
     console.warn('Failed to load shiki highlighter', err);
