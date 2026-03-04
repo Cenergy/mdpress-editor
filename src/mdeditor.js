@@ -133,7 +133,7 @@ const OPTIONS = {
     preview: true,
     dark: false,
     theme: 'vitepress',
-    themeURL: './../theme/',
+    themeURL: (import.meta.env.BASE_URL || '/') + 'theme/',
     themeCache: true,
     tocOpen: false,
     emojiURL: 'https://cdn.jsdelivr.net/npm/@emoji-mart/data',
@@ -808,20 +808,32 @@ export class MDEditor extends Eventable(Base) {
         if (THEMECACHE.get(theme) && themeCache) {
             themeChange(THEMECACHE.get(theme));
         } else {
-            const url = `${this.options.themeURL}${theme}.css?t=${now()}`;
-            // get theme style
-            const promise = fetchScheduler.createFetch(url, {
-                // ...
-            });
-            promise.then(res => res.text()).then(text => {
-                if (themeCache) {
-                    THEMECACHE.set(theme, text);
-                }
-                themeChange(text);
-            }).catch(err => {
-                console.error(`not fetch theme：'${theme}' from:${url}`);
-                console.error(err);
-            });
+            const url = `${this.options.themeURL}${theme}.css?direct&t=${now()}`;
+          // get theme style
+          const promise = fetchScheduler.createFetch(url, {
+            // ...
+          });
+          promise.then(res => {
+            console.log(`Fetching theme: ${url}, status: ${res.status}, type: ${res.headers.get('content-type')}`);
+            if (!res.ok) {
+              throw new Error(`Failed to fetch theme: ${res.status} ${res.statusText}`);
+            }
+            return res.text();
+          }).then(text => {
+            if (text.trim().startsWith('<!DOCTYPE html>') || text.trim().startsWith('<html')) {
+              console.error(`Theme fetch returned HTML instead of CSS from: ${url}`);
+              getToastr().error(`Load theme '${theme}' failed (returned HTML)`);
+              return;
+            }
+            if (themeCache) {
+              THEMECACHE.set(theme, text);
+            }
+            themeChange(text);
+          }).catch(err => {
+            console.error(`not fetch theme：'${theme}' from:${url}`);
+            console.error(err);
+            getToastr().error(`Load theme '${theme}' failed`);
+          });
         }
         return this;
     }
