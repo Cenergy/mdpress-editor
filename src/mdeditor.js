@@ -808,9 +808,10 @@ export class MDEditor extends Eventable(Base) {
         if (THEMECACHE.get(theme) && themeCache) {
             themeChange(THEMECACHE.get(theme));
         } else {
-            const url = `${this.options.themeURL}${theme}.css?direct&t=${now()}`;
-          // get theme style
-          const promise = fetchScheduler.createFetch(url, {
+            const isDev = import.meta.env.DEV;
+            const url = `${this.options.themeURL}${theme}.css${isDev ? '?direct' : ''}&t=${now()}`;
+            // get theme style
+            const promise = fetchScheduler.createFetch(url, {
             // ...
           });
           promise.then(res => {
