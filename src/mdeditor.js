@@ -283,8 +283,14 @@ export class MDEditor extends Eventable(Base) {
 
         const toolsDom = this.toolsDom = createDom('div');
         toolsDom.className = 'mdeditor-tools';
-        this.dom.appendChild(toolsDom);
-        this.dom.appendChild(mainDom);
+
+        const layoutDom = createDom('div');
+        layoutDom.className = 'mdeditor-layout';
+        this.dom.appendChild(layoutDom);
+        layoutDom.appendChild(toolsDom);
+        layoutDom.appendChild(mainDom);
+        // this.dom.appendChild(toolsDom);
+        // this.dom.appendChild(mainDom);
 
         const scrollTopDom = createDom('div');
         scrollTopDom.className = 'mdeditor-scrolltop editor-scrolltop';

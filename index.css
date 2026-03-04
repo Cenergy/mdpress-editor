@@ -46,8 +46,17 @@
   z-index: 100;
 }
 
+.mdeditor-layout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
 .mdeditor-tools {
-  height: 30px;
+  min-height: 30px;
+  height: auto;
+  overflow: hidden;
   border: 1px solid whitesmoke;
   background-color: white;
   position: sticky;
@@ -91,9 +100,12 @@
 }
 
 .mdeditor-main {
-  height: calc(100% - 32px);
+  /* height: calc(100% - 32px); */
+  flex: 1;
+  height: auto;
   display: flex;
   width: 100%;
+  overflow: hidden;
 }
 
 .mdeditor-editor-container {
