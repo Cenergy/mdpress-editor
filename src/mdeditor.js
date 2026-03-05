@@ -299,6 +299,64 @@ export class MDEditor extends Eventable(Base) {
         on(scrollTopDom, 'click', () => {
             this.editor.setScrollTop(0, 0);
         });
+
+        // 创建移动端切换按钮
+        const toggleBtn = createDom('div');
+        toggleBtn.className = 'mdeditor-toggle-btn';
+        toggleBtn.innerText = '看';
+        this.dom.appendChild(toggleBtn);
+
+        // 当前模式：write (编辑) 或 read (预览)
+        let currentMode = 'write';
+
+        // 更新布局逻辑：根据屏幕宽度和当前模式调整编辑器和预览区的显示
+        const updateLayout = () => {
+            // 移动端阈值：768px
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                // 移动端模式：显示切换按钮
+                toggleBtn.style.display = 'block';
+                if (currentMode === 'write') {
+                    // 写模式：显示编辑器，隐藏预览，显示工具栏
+                    this.editorDom.style.display = 'block';
+                    this.previewDom.style.display = 'none';
+                    this.editorDom.style.width = '100%';
+                    if (this.toolsDom) this.toolsDom.style.display = '';
+                    toggleBtn.innerText = '看';
+                } else {
+                    // 看模式：隐藏编辑器，显示预览，隐藏工具栏
+                    this.editorDom.style.display = 'none';
+                    this.previewDom.style.display = 'block';
+                    this.previewDom.style.width = '100%';
+                    if (this.toolsDom) this.toolsDom.style.display = 'none';
+                    toggleBtn.innerText = '写';
+                }
+            } else {
+                // 桌面端模式：隐藏切换按钮，分屏显示
+                toggleBtn.style.display = 'none';
+                this.editorDom.style.display = 'block';
+                this.previewDom.style.display = 'block';
+                this.editorDom.style.width = '50%';
+                this.previewDom.style.width = '50%';
+                if (this.toolsDom) this.toolsDom.style.display = '';
+            }
+            // 触发布局更新以适应新尺寸
+            if (this.editor) {
+                this.editor.layout();
+            }
+        };
+
+        // 监听切换按钮点击事件
+        on(toggleBtn, 'click', (e) => {
+            e.stopPropagation();
+            currentMode = currentMode === 'write' ? 'read' : 'write';
+            updateLayout();
+        });
+
+        // 监听窗口大小变化自动更新布局
+        on(window, 'resize', updateLayout);
+        // 初始化时延迟执行一次布局更新
+        setTimeout(updateLayout, 100);
         // mainDom.appendChild(editorDom);
         // mainDom.appendChild(previewDom);
 
