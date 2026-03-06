@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "description": "markdown editor base monaco",
   "main": "./dist/mdpress-monaco-editor.js",
-  "module": "./dist/mdpress-monaco-editor.mjs",
+  "module": "./dist/mdpress-monaco-editor.esm.js",
   "exports": {
     ".": {
-      "import": "./dist/mdpress-monaco-editor.mjs",
+      "import": "./dist/mdpress-monaco-editor.esm.js",
       "require": "./dist/mdpress-monaco-editor.js"
     }
   },

@@ -8,7 +8,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'index.js'),
       name: 'mdpress',
-      fileName: (format) => `mdpress-monaco-editor.${format === 'es' ? 'mjs' : 'js'}`,
+      fileName: (format) => `mdpress-monaco-editor.${format === 'es' ? 'esm.js' : 'js'}`,
       formats: ['es', 'umd']
     },
     rollupOptions: {
@@ -24,7 +24,7 @@ export default defineConfig({
         'swiper',
         'viewerjs',
         'x-data-spreadsheet',
-        'prettier',
+        /^prettier/,
         'file-saver',
         'qrcode',
         'flowchart.js',
