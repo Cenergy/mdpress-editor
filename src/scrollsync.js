@@ -1,88 +1,3 @@
-import { trimTitle, isTitle, formatHeadContents } from './util';
-
-function getTitleDom(dom, title, lineNumber) {
-    lineNumber += '';
-    const nodes = dom.children;
-    for (let i = 0, len = nodes.length; i < len; i++) {
-        const node = nodes[i];
-        if (node.dataset.lineNumber === lineNumber) {
-            return {
-                node
-            };
-        }
-    }
-    title = trimTitle(title);
-    title = title.replaceAll(' ', '-');
-    title = title.toLowerCase();
-    title = encodeURIComponent(title);
-    for (let i = 0, len = nodes.length; i < len; i++) {
-        const node = nodes[i];
-        if (node.id === title) {
-            return {
-                node
-            };
-        }
-    }
-}
-
-// function getCurrentTitleDoms(dom, lineNum) {
-//     console.log(lineNum);
-//     const nodes = dom.children;
-//     let preNode, nextNode, offsetLines = 0, startLine, endLine;
-//     for (let i = 0, len = nodes.length; i < len; i++) {
-//         const node = nodes[i];
-//         const tag = node.tagName;
-//         if (!isHeadTag(tag)) {
-//             continue;
-//         }
-//         let lineNumber = node.getAttribute('linenumber');
-//         lineNumber = parseInt(lineNumber);
-//         if (lineNumber <= lineNum) {
-//             preNode = node;
-//             offsetLines = lineNum - lineNumber;
-//             startLine = lineNumber;
-//         }
-//         if (lineNumber > lineNum) {
-//             nextNode = node;
-//             endLine = lineNumber;
-//             break;
-//         }
-//     }
-//     return {
-//         preNode, nextNode, offsetLines, startLine, endLine
-//     };
-// }
-
-// export function calScroll(editor, dom) {
-//     const ranges = editor.getVisibleRanges();
-//     if (!ranges.length) {
-//         return;
-//     }
-//     const range = ranges[0];
-//     // const model = editor.getModel();
-//     const { startLineNumber } = range;
-//     const { preNode, nextNode, offsetLines, startLine, endLine } = getCurrentTitleDoms(dom, startLineNumber);
-//     if (!preNode) {
-//         return;
-//     }
-//     console.log(preNode.id, nextNode.id);
-//     const node = preNode;
-//     let lineHeight = 22;
-//     if (nextNode) {
-//         const raws = endLine - startLine;
-//         if (raws > 10) {
-//             const offsetHeight = nextNode.offsetTop - node.offsetTop;
-//             lineHeight = offsetHeight / raws;
-//         }
-
-//     }
-//     // console.log(title);
-//     // console.log(node);
-//     const top = node.offsetTop || 0;
-//     const scrollTop = top + offsetLines * lineHeight - 40;
-//     return scrollTop;
-
-// }
 
 export function calScroll(editor, dom) {
     const ranges = editor.getVisibleRanges();
@@ -90,71 +5,72 @@ export function calScroll(editor, dom) {
         return;
     }
     const range = ranges[0];
-    const model = editor.getModel();
     const { startLineNumber } = range;
-    let lineNumber = startLineNumber;
-    let title;
-    let offsetLines = 0;
-    const headContents = formatHeadContents(dom);
-    while (lineNumber >= 1) {
-        let content = model.getLineContent(lineNumber);
-        if (isTitle(content, headContents)) {
-            title = content;
+    const children = dom.children;
+    let target = null;
+    let nextTarget = null;
+    for (let i = 0; i < children.length; i++) {
+        const child = children[i];
+        const dataLine = parseInt(child.getAttribute('data-line'));
+        if (isNaN(dataLine)) {
+            continue;
+        }
+        if (dataLine <= startLineNumber) {
+            target = child;
+        } else {
+            nextTarget = child;
             break;
         }
-        content = content.trim();
-        if (content !== '') {
-            offsetLines++;
-        }
-        lineNumber--;
     }
-    if (!title) {
-        return;
+    if (!target) {
+        return 0;
     }
-    const result = getTitleDom(dom, title, lineNumber);
-    if (!result) {
-        return;
-    }
-    const lineCount = model.getLineCount();
-    lineNumber = startLineNumber;
-    let nextTitle, nextNode, nextOffsetLines = 0;
-    while (lineNumber <= lineCount) {
-        let content = model.getLineContent(lineNumber);
-        if (isTitle(content, headContents)) {
-            nextTitle = content;
-            break;
-        }
-        content = content.trim();
-        if (content !== '') {
-            nextOffsetLines++;
-        }
-        lineNumber++;
-    }
-    if (nextTitle) {
-        const result = getTitleDom(dom, nextTitle, lineNumber);
-        if (result) {
-            nextNode = result.node;
+    const targetLine = parseInt(target.getAttribute('data-line'));
+    let offset = 0;
+    if (nextTarget) {
+        const nextLine = parseInt(nextTarget.getAttribute('data-line'));
+        const lineDiff = nextLine - targetLine;
+        const heightDiff = nextTarget.offsetTop - target.offsetTop;
+        const lineOffset = startLineNumber - targetLine;
+        if (lineDiff > 0) {
+            offset = (lineOffset / lineDiff) * heightDiff;
         }
     }
-    const { node } = result;
-    // const { preNode, nextNode, offsetLines, startLine, endLine } = getCurrentTitleDoms(dom, startLineNumber);
-    // if (!preNode) {
-    //     return;
-    // }
-    // console.log(preNode.id, nextNode.id);
-    // const node = preNode;
-    let lineHeight = 22;
-    if (nextNode) {
-        const raws = nextOffsetLines + offsetLines;
-        if (raws > 10) {
-            const offsetHeight = nextNode.offsetTop - node.offsetTop;
-            lineHeight = offsetHeight / raws;
-        }
+    return target.offsetTop + offset - 10; // -10 for padding
+}
 
+export function calEditorScroll(dom) {
+    const scrollTop = dom.scrollTop;
+    const children = dom.children;
+    let target = null;
+    let nextTarget = null;
+    for (let i = 0; i < children.length; i++) {
+        const child = children[i];
+        if (child.offsetTop <= scrollTop) {
+            target = child;
+        } else {
+            nextTarget = child;
+            break;
+        }
     }
-    // console.log(title);
-    // console.log(node);
-    const top = node.offsetTop || 0;
-    const scrollTop = top + offsetLines * lineHeight - 40;
-    return scrollTop;
+    if (!target) {
+        return 1;
+    }
+    const targetLine = parseInt(target.getAttribute('data-line'));
+    if (isNaN(targetLine)) {
+        return;
+    }
+    let offsetLine = 0;
+    if (nextTarget) {
+        const nextLine = parseInt(nextTarget.getAttribute('data-line'));
+        if (!isNaN(nextLine)) {
+            const lineDiff = nextLine - targetLine;
+            const heightDiff = nextTarget.offsetTop - target.offsetTop;
+            const scrollOffset = scrollTop - target.offsetTop;
+            if (heightDiff > 0) {
+                offsetLine = (scrollOffset / heightDiff) * lineDiff;
+            }
+        }
+    }
+    return Math.floor(targetLine + offsetLine);
 }

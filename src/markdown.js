@@ -112,13 +112,13 @@ function escapeHtml(str) {
 
 function renderAttrs(token) {
     let i, l, result;
-    if (token.type === 'heading_open') {
-        token.attrs = token.attrs || [];
-        if (token.map) {
-            const [lineNumber] = token.map;
-            token.attrs.push(['linenumber', lineNumber + 1]);
-        }
+    // if (token.type === 'heading_open') {
+    token.attrs = token.attrs || [];
+    if (token.map) {
+        const [lineNumber] = token.map;
+        token.attrs.push(['data-line', lineNumber + 1]);
     }
+    // }
 
     if (!token.attrs) { return ''; }
 

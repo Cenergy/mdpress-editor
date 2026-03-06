@@ -10,7 +10,7 @@ import Viewer from 'viewerjs';
 import { checkIframe } from './preview/iframe';
 import { checkInclude } from './mdinclude';
 // import { scrollTop } from './preview/scrolltop';
-import { calScroll } from './scrollsync';
+import { calScroll, calEditorScroll } from './scrollsync';
 import { removePreBgColor } from './preview/prebackground';
 import { themes } from '../theme';
 import { fetchScheduler } from './fetchScheduler';
@@ -366,8 +366,31 @@ export class MDEditor extends Eventable(Base) {
             this.editorUpdateValues.push(value);
         });
         this.editor.onDidScrollChange((e) => {
+            if (this.isScrollingPreview) {
+                return;
+            }
+            this.isScrollingEditor = true;
             this._scrollEvent = e;
             this._syncScroll();
+            if (this.editorScrollTimer) {
+                clearTimeout(this.editorScrollTimer);
+            }
+            this.editorScrollTimer = setTimeout(() => {
+                this.isScrollingEditor = false;
+            }, 100);
+        });
+        on(this.previewDom, 'scroll', () => {
+            if (this.isScrollingEditor) {
+                return;
+            }
+            this.isScrollingPreview = true;
+            this._syncEditorScroll();
+            if (this.previewScrollTimer) {
+                clearTimeout(this.previewScrollTimer);
+            }
+            this.previewScrollTimer = setTimeout(() => {
+                this.isScrollingPreview = false;
+            }, 100);
         });
         this.editor.onDidPaste((e) => {
             if (!this.options.autoParseVSCodePasteData) {
@@ -731,6 +754,13 @@ export class MDEditor extends Eventable(Base) {
             left: 0,
             behavior: 'smooth'
         });
+    }
+
+    _syncEditorScroll() {
+        const lineNumber = calEditorScroll(this.previewDom);
+        if (lineNumber) {
+            this.editor.revealLineNearTop(lineNumber);
+        }
     }
 
     // https://github.com/microsoft/monaco-editor/issues/639
