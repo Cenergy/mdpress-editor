@@ -197,23 +197,28 @@
 }
 
 .mdeditor-scrolltop {
-  position: sticky;
-  z-index: 1;
-  bottom: 10px;
-  /* right: 20px; */
-  background-color: black;
+  position: fixed;
+  z-index: 1000;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.7);
   color: #fff;
-  width: 24px;
-  height: 24px;
-  border-radius: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   text-align: center;
   cursor: pointer;
-  margin-left: calc(100% - 24px);
-  line-height: 1 !important;
+  line-height: 40px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  /* margin-left: calc(100% - 24px); */
+}
+
+.mdeditor-scrolltop:hover {
+  background: rgba(0, 0, 0, 0.85);
 }
 
 .mdeditor-scrolltop .iconfont {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .editor-scrolltop {
