@@ -34,98 +34,6 @@
     "index.js",
     "index.css"
   ],
-  "peerDependencies": {
-    "@emoji-mart/data": "^1.1.2",
-    "dayjs": "^1.11.9",
-    "emoji-mart": "^5.5.2",
-    "file-saver": "^2.0.5",
-    "flowchart.js": "^1.18.0",
-    "highlight.js": "^11.8.0",
-    "html-to-image": "^1.11.11",
-    "katex": "^0.6.0",
-    "markdown-it": "^14.1.0",
-    "markmap-common": "^0.15.3",
-    "markmap-lib": "^0.15.4",
-    "markmap-view": "^0.15.4",
-    "mermaid": "^10.4.0",
-    "monaco-editor": "^0.41.0",
-    "prettier": "^3.0.3",
-    "print-js": "^1.6.0",
-    "qrcode": "^1.5.4",
-    "shiki": "^0.14.3",
-    "swiper": "^10.2.0",
-    "viewerjs": "^1.11.5",
-    "x-data-spreadsheet": "^1.1.9",
-    "xlsx": "^0.18.5"
-  },
-  "peerDependenciesMeta": {
-    "@emoji-mart/data": {
-      "optional": true
-    },
-    "dayjs": {
-      "optional": true
-    },
-    "emoji-mart": {
-      "optional": true
-    },
-    "file-saver": {
-      "optional": true
-    },
-    "flowchart.js": {
-      "optional": true
-    },
-    "highlight.js": {
-      "optional": true
-    },
-    "html-to-image": {
-      "optional": true
-    },
-    "katex": {
-      "optional": true
-    },
-    "markdown-it": {
-      "optional": true
-    },
-    "markmap-common": {
-      "optional": true
-    },
-    "markmap-lib": {
-      "optional": true
-    },
-    "markmap-view": {
-      "optional": true
-    },
-    "mermaid": {
-      "optional": true
-    },
-    "monaco-editor": {
-      "optional": true
-    },
-    "prettier": {
-      "optional": true
-    },
-    "print-js": {
-      "optional": true
-    },
-    "qrcode": {
-      "optional": true
-    },
-    "shiki": {
-      "optional": true
-    },
-    "swiper": {
-      "optional": true
-    },
-    "viewerjs": {
-      "optional": true
-    },
-    "x-data-spreadsheet": {
-      "optional": true
-    },
-    "xlsx": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@emoji-mart/data": "^1.1.2",
     "@rollup/plugin-commonjs": "^25.0.4",
@@ -182,7 +90,29 @@
     "markdown-it-plantuml": "^1.4.1",
     "markdown-it-task-lists": "^2.1.1",
     "markdown-it-toc-done-right": "^4.2.0",
+    "markmap-common": "^0.15.3",
+    "markmap-lib": "^0.15.4",
+    "markmap-view": "^0.15.4",
     "mini-toastr": "^0.8.1",
-    "morphdom": "^2.7.4"
+    "morphdom": "^2.7.4",
+    "@emoji-mart/data": "^1.1.2",
+    "dayjs": "^1.11.9",
+    "emoji-mart": "^5.5.2",
+    "file-saver": "^2.0.5",
+    "flowchart.js": "^1.18.0",
+    "highlight.js": "^11.8.0",
+    "html-to-image": "^1.11.11",
+    "katex": "^0.16.28",
+    "markdown-it": "^14.1.0",
+    "mermaid": "^10.4.0",
+    "monaco-editor": "^0.41.0",
+    "prettier": "^3.0.3",
+    "print-js": "^1.6.0",
+    "qrcode": "^1.5.4",
+    "shiki": "^0.14.3",
+    "swiper": "^10.2.0",
+    "viewerjs": "^1.11.5",
+    "x-data-spreadsheet": "^1.1.9",
+    "xlsx": "^0.18.5"
   }
 }
