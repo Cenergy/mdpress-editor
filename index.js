@@ -4,6 +4,7 @@ export {
 } from './src/util';
 export {
     registerShikiHighlighter,
+    setShikiPaths,
     registerMonaco,
     registerHightLight,
     registerPrettier,

@@ -5,7 +5,7 @@ import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
 import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
 import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
-import * as mdpress from '../index.js';
+import * as mdpress from '../dist/mdpress-monaco-editor.esm.js';
 
 import 'highlight.js/styles/atom-one-dark.min.css';
 import 'katex/dist/katex.min.css';
