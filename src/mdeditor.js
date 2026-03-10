@@ -903,7 +903,7 @@ export class MDEditor extends Eventable(Base) {
             themeChange(THEMECACHE.get(theme));
         } else {
             const isDev = import.meta.env.DEV;
-            const url = `${this.options.themeURL}${theme}.css${isDev ? '?direct' : ''}&t=${now()}`;
+            const url = `${this.options.themeURL}${theme}.css?${isDev ? 'direct' : ''}&t=${now()}`;
             // get theme style
             const promise = fetchScheduler.createFetch(url, {
             // ...
