@@ -16,6 +16,7 @@ export default defineConfig({
       external: [
         'highlight.js',
         'monaco-editor',
+        'shiki',
         'mermaid',
         'katex',
         'markdown-it',

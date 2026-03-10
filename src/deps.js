@@ -15,39 +15,32 @@ import mermaid from 'mermaid';
 import * as XLSX from 'xlsx';
 import X_spreadsheet from 'x-data-spreadsheet';
 import flowchart from 'flowchart.js';
-import { getHighlighter } from 'shiki';
+import { createHighlighter } from 'shiki';
 import * as markmapCommon from 'markmap-common';
 import * as markmapView from 'markmap-view';
 import * as markmapLib from 'markmap-lib';
 
 // Shiki initialization
 let shikiHighlighter;
-const isDev = import.meta.env.DEV;
-const defaultShikiPaths = isDev ? {
-    themes: '/node_modules/shiki/themes/',
-    languages: '/node_modules/shiki/languages/',
-    wasm: '/node_modules/shiki/dist/'
-} : {
-    themes: 'https://cdn.jsdelivr.net/npm/shiki@0.14.7/themes/',
-    languages: 'https://cdn.jsdelivr.net/npm/shiki@0.14.7/languages/',
-    wasm: 'https://cdn.jsdelivr.net/npm/shiki@0.14.7/dist/'
-};
-
-let shikiPaths = defaultShikiPaths;
 
 function initShiki() {
-    getHighlighter({ theme: 'nord', paths: shikiPaths }).then(highlighter => {
-        shikiHighlighter = highlighter;
-    }).catch(err => {
-        console.warn('Failed to load shiki highlighter', err);
-    });
+  createHighlighter({
+    themes: ['nord'],
+    langs: [
+      'javascript', 'typescript', 'html', 'css', 'json', 'markdown', 'vue', 'bash', 'shell',
+      'python', 'java', 'c', 'cpp', 'go', 'rust', 'sql', 'yaml', 'xml', 'ini', 'docker', 'dockerfile'
+    ]
+  }).then((highlighter) => {
+    shikiHighlighter = highlighter;
+  }).catch((err) => {
+    console.warn('Failed to load shiki highlighter', err);
+  });
 }
 
 initShiki();
 
 export function setShikiPaths(paths) {
-    shikiPaths = Object.assign({}, defaultShikiPaths, paths);
-    initShiki();
+    console.warn('setShikiPaths is deprecated in Shiki v1.0+');
 }
 
 export function registerShikiHighlighter(highlighter) {
