@@ -1,6 +1,6 @@
 {
   "name": "mdpress-monaco-editor",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "markdown editor base monaco",
   "main": "./dist/mdpress-monaco-editor.js",
   "module": "./dist/mdpress-monaco-editor.esm.js",
