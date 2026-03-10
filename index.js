@@ -1,3 +1,4 @@
+import { version } from './package.json';
 export {
     showLoading,
     hideLoading
@@ -19,3 +20,5 @@ export {
 export * from './src/mdeditor';
 export * from './src/toolicon';
 export * from './theme/index';
+
+console.log(`MdEditor Version: ${version}`);
