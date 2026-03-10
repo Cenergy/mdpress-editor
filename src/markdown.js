@@ -163,7 +163,7 @@ export function createMarkdown() {
             // console.log(str);
             const shikiHighlighter = getShikiHighlighter();
             if (shikiHighlighter && shikiHighlighter.codeToHtml) {
-                return shikiHighlighter.codeToHtml(str, { lang });
+                return shikiHighlighter.codeToHtml(str, { lang, theme: 'nord' });
             }
             // const hljs = getHightLight();
             if (lang && hljs && hljs.getLanguage(lang)) {

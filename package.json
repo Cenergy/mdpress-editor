@@ -8,7 +8,8 @@
     ".": {
       "import": "./dist/mdpress-monaco-editor.esm.js",
       "require": "./dist/mdpress-monaco-editor.js"
-    }
+    },
+    "./dist/style.css": "./dist/style.css"
   },
   "scripts": {
     "lint": "eslint ./src/**/*.js",
@@ -68,7 +69,6 @@
     "qrcode": "^1.5.4",
     "rollup": "^3.29.1",
     "rollup-plugin-node-builtins": "^2.1.2",
-    "shiki": "^0.14.3",
     "swiper": "^10.2.0",
     "terser": "^5.19.2",
     "viewerjs": "^1.11.5",
@@ -78,6 +78,7 @@
     "xlsx": "^0.18.5"
   },
   "dependencies": {
+    "shiki": "^0.14.3",
     "@floating-ui/dom": "^1.5.2",
     "@mdit/plugin-img-lazyload": "^0.13.1",
     "domclickoutside": "^0.1.0",
