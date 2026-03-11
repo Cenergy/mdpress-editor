@@ -12,6 +12,7 @@ import 'katex/dist/katex.min.css';
 import 'viewerjs/dist/viewer.min.css';
 import 'swiper/css/bundle';
 import 'x-data-spreadsheet/dist/xspreadsheet.css';
+import '../dist/mdpress-monaco-editor.css';
 
 // Monaco Environment Setup
 const workers = {
