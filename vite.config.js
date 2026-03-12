@@ -38,6 +38,12 @@ export default defineConfig({
         '@emoji-mart/data'
       ],
       output: {
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name === 'style.css') {
+            return 'mdpress-monaco-editor.css';
+          }
+          return assetInfo.name;
+        },
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
         globals: {
           'highlight.js': 'hljs',

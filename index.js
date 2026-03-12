@@ -1,4 +1,5 @@
 import { version } from './package.json';
+import './index.css';
 export {
     showLoading,
     hideLoading

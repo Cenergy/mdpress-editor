@@ -9,7 +9,7 @@
       "import": "./dist/mdpress-monaco-editor.esm.js",
       "require": "./dist/mdpress-monaco-editor.js"
     },
-    "./dist/style.css": "./dist/style.css"
+    "./dist/mdpress-monaco-editor.css": "./dist/mdpress-monaco-editor.css"
   },
   "scripts": {
     "lint": "eslint ./src/**/*.js",

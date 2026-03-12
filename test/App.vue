@@ -47,11 +47,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="editorContainer" class="container"></div>
+  <div ref="editorContainer"></div>
 </template>
 
 <style>
-@import '../index.css';
+/* @import '../index.css'; */
 
 html, body, #app {
   height: 100%;
