@@ -1,6 +1,6 @@
 <script setup>
-import { onMounted, ref } from 'vue';
-import * as mdpress from '../index.js';
+import { onMounted, ref, onBeforeUnmount } from 'vue';
+import { createEditor, destroyEditor } from './editor.js';
 
 const editorContainer = ref(null);
 let mEditor;
@@ -33,7 +33,7 @@ const customIcons = () => {
 
 onMounted(() => {
   if (editorContainer.value) {
-    mEditor = new mdpress.MDEditor(editorContainer.value, {
+    mEditor = createEditor(editorContainer.value, {
       theme: 'serene-rose',
       monacoOptions: {
         // language: 'markdown-math'
@@ -43,6 +43,10 @@ onMounted(() => {
     loadData();
     customIcons();
   }
+});
+
+onBeforeUnmount(() => {
+  destroyEditor();
 });
 </script>
 
