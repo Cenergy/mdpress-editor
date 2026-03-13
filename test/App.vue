@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref, onBeforeUnmount } from 'vue';
 import { createEditor, destroyEditor } from './editor.js';
+import { runSmokeRenderTests } from './smoke.js';
 
 const editorContainer = ref(null);
 let mEditor;
@@ -42,6 +43,16 @@ onMounted(() => {
     });
     loadData();
     customIcons();
+    const query = new URLSearchParams(window.location.search);
+    if (query.get('smokeTest') === '1') {
+      runSmokeRenderTests(mEditor).then((result) => {
+        if (result.success) {
+          console.log('[smoke] render smoke tests passed');
+          return;
+        }
+        console.error('[smoke] render smoke tests failed:', result.reason);
+      });
+    }
   }
 });
 

@@ -3,6 +3,7 @@ import * as monaco from 'monaco-editor';
 import hljs from 'highlight.js';
 import flowchartModule from 'flowchart.js';
 import mermaidModule from 'mermaid';
+import { normalizeModule } from './util';
 
 let shikiHighlighter;
 let shikiLoadingPromise;
@@ -128,31 +129,9 @@ function qrcodeLoader() {
 }
 
 function normalizeMermaid(mod) {
-    if (!mod) {
-        return null;
-    }
-    const visited = new Set();
-    const queue = [mod];
-    while (queue.length) {
-        const current = queue.shift();
-        if (!current || (typeof current !== 'object' && typeof current !== 'function') || visited.has(current)) {
-            continue;
-        }
-        visited.add(current);
-        if (typeof current.initialize === 'function' && typeof current.run === 'function') {
-            return current;
-        }
-        if (current.default) {
-            queue.push(current.default);
-        }
-        if (current.mermaid) {
-            queue.push(current.mermaid);
-        }
-        if (current.mermaidAPI) {
-            queue.push(current.mermaidAPI);
-        }
-    }
-    return null;
+    return normalizeModule(mod, (current) => {
+        return typeof current.initialize === 'function' && typeof current.run === 'function';
+    }, ['default', 'mermaid', 'mermaidAPI']);
 }
 
 function mermaidLoader() {
@@ -201,31 +180,9 @@ function xSpreadsheetLoader() {
 }
 
 function normalizeFlowChart(mod) {
-    if (!mod) {
-        return null;
-    }
-    const visited = new Set();
-    const queue = [mod];
-    while (queue.length) {
-        const current = queue.shift();
-        if (!current || (typeof current !== 'object' && typeof current !== 'function') || visited.has(current)) {
-            continue;
-        }
-        visited.add(current);
-        if (typeof current.parse === 'function') {
-            return current;
-        }
-        if (current.default) {
-            queue.push(current.default);
-        }
-        if (current.flowchart) {
-            queue.push(current.flowchart);
-        }
-        if (current.FlowChart) {
-            queue.push(current.FlowChart);
-        }
-    }
-    return null;
+    return normalizeModule(mod, (current) => {
+        return typeof current.parse === 'function';
+    }, ['default', 'flowchart', 'FlowChart']);
 }
 
 function flowchartLoader() {

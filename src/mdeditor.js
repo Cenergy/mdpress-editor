@@ -212,16 +212,7 @@ export class MDEditor extends Eventable(Base) {
         this.frameId = null;
         this.emojiPicker = null;
         this.emojiPickerLoadingPromise = null;
-        let time = now();
-        const loop = () => {
-            if (now() - time > this.options.updatePreviewDuration) {
-                this.updatePreview();
-                time = now();
-            }
-            this.frameId = requestAnimationFrame(loop);
-        };
-
-        this.frameId = requestAnimationFrame(loop);
+        this.previewUpdateTimer = null;
         on(window, 'resize', () => {
             if (!this.fullScreen) {
                 return;
@@ -372,6 +363,7 @@ export class MDEditor extends Eventable(Base) {
         this.editor.onDidChangeModelContent(() => {
             const value = this.getValue();
             this.editorUpdateValues.push(value);
+            this._schedulePreviewUpdate();
         });
         this.editor.onDidScrollChange((e) => {
             if (this.isScrollingPreview) {
@@ -715,6 +707,21 @@ export class MDEditor extends Eventable(Base) {
             return this;
         }
         return this.editor.getValue();
+    }
+
+    _schedulePreviewUpdate() {
+        if (!this.preview) {
+            return this;
+        }
+        if (this.previewUpdateTimer) {
+            clearTimeout(this.previewUpdateTimer);
+        }
+        const duration = Number(this.options.updatePreviewDuration) || 0;
+        this.previewUpdateTimer = setTimeout(() => {
+            this.previewUpdateTimer = null;
+            this.updatePreview();
+        }, duration);
+        return this;
     }
 
     updatePreview() {

@@ -185,6 +185,30 @@ export function now() {
     return new Date().getTime();
 }
 
+export function normalizeModule(mod, matcher, relationKeys = ['default']) {
+    if (!mod || typeof matcher !== 'function') {
+        return null;
+    }
+    const visited = new Set();
+    const queue = [mod];
+    while (queue.length) {
+        const current = queue.shift();
+        if (!current || (typeof current !== 'object' && typeof current !== 'function') || visited.has(current)) {
+            continue;
+        }
+        visited.add(current);
+        if (matcher(current)) {
+            return current;
+        }
+        relationKeys.forEach((key) => {
+            if (current[key]) {
+                queue.push(current[key]);
+            }
+        });
+    }
+    return null;
+}
+
 export function domSizeByWindow(dom) {
     const { innerWidth, innerHeight } = window;
     dom.style.width = `${innerWidth}px`;
