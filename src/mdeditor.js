@@ -9,7 +9,7 @@ import Eventable from './Eventable';
 import Viewer from 'viewerjs';
 import { checkIframe } from './preview/iframe';
 import { checkInclude } from './mdinclude';
-// import { scrollTop } from './preview/scrolltop';
+import { scrollTop } from './preview/scrolltop';
 import { calScroll, calEditorScroll } from './scrollsync';
 import { removePreBgColor } from './preview/prebackground';
 import { themes } from '../theme';
@@ -213,6 +213,9 @@ export class MDEditor extends Eventable(Base) {
             if (!this.fullScreen) {
                 return;
             }
+            if (!this.dom.classList.contains('mdeditor-fullscreen')) {
+                return;
+            }
             domSizeByWindow(this.getContainer());
         });
         this.pasteItems = [];
@@ -291,14 +294,6 @@ export class MDEditor extends Eventable(Base) {
         layoutDom.appendChild(mainDom);
         // this.dom.appendChild(toolsDom);
         // this.dom.appendChild(mainDom);
-
-        const scrollTopDom = createDom('div');
-        scrollTopDom.className = 'mdeditor-scrolltop editor-scrolltop';
-        scrollTopDom.innerHTML = '<i class="iconfont icon-huidaodingbu"></i>';
-        this.dom.appendChild(scrollTopDom);
-        on(scrollTopDom, 'click', () => {
-            this.editor.setScrollTop(0, 0);
-        });
 
         // 创建移动端切换按钮
         const toggleBtn = createDom('div');
@@ -729,7 +724,17 @@ export class MDEditor extends Eventable(Base) {
             this.imageViewer = new Viewer(dom);
             initExcel(dom, this);
             setHeadLineNumber(dom, this.editor);
-            // scrollTop(dom, this);
+            scrollTop(dom, this.mainDom, () => {
+                if (dom.style.display === 'none') {
+                    this.editor.setScrollTop(0);
+                } else {
+                    dom.scroll({
+                        top: 0,
+                        left: 0,
+                        behavior: 'smooth'
+                    });
+                }
+            });
             this._initTocData();
             this._syncScroll();
         });

@@ -51,11 +51,15 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="editorContainer"></div>
+  <div class="container2" style="display: flex;flex-direction: row; width: 100%;height: 100%;">
+    <div  style="flex: 1;min-width: 0;height: 100%;background-color: black;">
+      <div ref="editorContainer" style="width: 100%;height: 100%;background-color: green;"></div>
+    </div>
+    <div  style="width: 500px;height: 100%;background-color: cadetblue;"></div>
+  </div>
 </template>
 
 <style>
-/* @import '../index.css'; */
 
 html, body, #app {
   height: 100%;
