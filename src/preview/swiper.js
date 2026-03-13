@@ -1,5 +1,5 @@
 import { getToastr } from '../toast';
-import { getSwiper } from '../deps';
+import { ensureSwiper, getSwiper } from '../deps';
 
 export function initSwiper(dom, mdEditor) {
     if (mdEditor.swipers) {
@@ -13,9 +13,13 @@ export function initSwiper(dom, mdEditor) {
     }
     const Swiper = getSwiper();
     if (!Swiper) {
-        const message = 'not find swiper,please registerSwiper';
-        console.error(message);
-        getToastr().error(message);
+        ensureSwiper().then(() => {
+            initSwiper(dom, mdEditor);
+        }).catch(() => {
+            const message = 'not find swiper,please registerSwiper';
+            console.error(message);
+            getToastr().error(message);
+        });
         return [];
     }
     const swipers = [];

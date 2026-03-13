@@ -55,7 +55,7 @@ onBeforeUnmount(() => {
     <div  style="flex: 1;min-width: 0;height: 100%;background-color: black;">
       <div ref="editorContainer" style="width: 100%;height: 100%;background-color: green;"></div>
     </div>
-    <div  style="width: 500px;height: 100%;background-color: cadetblue;"></div>
+    <div  style="width: 100px;height: 100%;background-color: cadetblue;"></div>
   </div>
 </template>
 

@@ -1,5 +1,5 @@
 import { getToastr } from '../toast';
-import { getFlowChart } from '../deps';
+import { ensureFlowChart, getFlowChart } from '../deps';
 
 export function initFlowChart(dom, mdEditor) {
     if (mdEditor.flowcharts) {
@@ -12,10 +12,21 @@ export function initFlowChart(dom, mdEditor) {
         return [];
     }
     const flowchart = getFlowChart();
-    if (!flowchart) {
-        const message = 'not find flowchart,please registerFlowChart';
-        console.error(message);
-        getToastr().error(message);
+    if (!flowchart || typeof flowchart.parse !== 'function') {
+        ensureFlowChart().then(() => {
+            const loadedFlowchart = getFlowChart();
+            if (!loadedFlowchart || typeof loadedFlowchart.parse !== 'function') {
+                const message = 'not find flowchart,please registerFlowChart';
+                console.error(message);
+                getToastr().error(message);
+                return;
+            }
+            initFlowChart(dom, mdEditor);
+        }).catch(() => {
+            const message = 'not find flowchart,please registerFlowChart';
+            console.error(message);
+            getToastr().error(message);
+        });
         return [];
     }
     mdEditor.flowcharts = [];

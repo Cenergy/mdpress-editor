@@ -1,4 +1,4 @@
-import { getXLSX, getX_spreadsheet } from '../deps';
+import { ensureXLSX, ensureX_spreadsheet, getXLSX, getX_spreadsheet } from '../deps';
 import { fetchScheduler } from '../fetchScheduler';
 import { getToastr } from '../toast';
 
@@ -9,16 +9,24 @@ export function initExcel(dom, editor) {
     }
     const XLSX = getXLSX();
     if (!XLSX) {
-        const message = 'not find XLSX,please registerXLSX';
-        console.error(message);
-        getToastr().error(message);
+        Promise.all([ensureXLSX(), ensureX_spreadsheet()]).then(() => {
+            initExcel(dom, editor);
+        }).catch(() => {
+            const message = 'not find XLSX,please registerXLSX';
+            console.error(message);
+            getToastr().error(message);
+        });
         return [];
     }
     const x_spreadsheet = getX_spreadsheet();
     if (!x_spreadsheet) {
-        const message = 'not find x_spreadsheet,please registerX_spreadsheet';
-        console.error(message);
-        getToastr().error(message);
+        Promise.all([ensureXLSX(), ensureX_spreadsheet()]).then(() => {
+            initExcel(dom, editor);
+        }).catch(() => {
+            const message = 'not find x_spreadsheet,please registerX_spreadsheet';
+            console.error(message);
+            getToastr().error(message);
+        });
         return [];
     }
     // const spSheets = [];

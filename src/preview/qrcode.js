@@ -1,5 +1,5 @@
 import { getToastr } from '../toast';
-import { getQRCode } from '../deps';
+import { ensureQRCode, getQRCode } from '../deps';
 
 export function initQRCode(dom) {
     const els = dom.querySelectorAll('.qrcode-container');
@@ -8,9 +8,13 @@ export function initQRCode(dom) {
     }
     const QRCode = getQRCode();
     if (!QRCode) {
-        const message = 'not find QRCode,please registerQRCode';
-        console.error(message);
-        getToastr().error(message);
+        ensureQRCode().then(() => {
+            initQRCode(dom);
+        }).catch(() => {
+            const message = 'not find QRCode,please registerQRCode';
+            console.error(message);
+            getToastr().error(message);
+        });
         return [];
     }
     const swipers = [];

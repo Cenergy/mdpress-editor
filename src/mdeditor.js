@@ -18,10 +18,9 @@ import { getToastr, initToastr } from './toast';
 import { checkLinks } from './preview/link';
 import { checkCodeGroup } from './preview/codegroup';
 import { initMermaid } from './preview/mermaid';
-import { fromatMarkMapJSON } from './preview/markmap';
 import { initSwiper } from './preview/swiper';
 import { checkFullScreen } from './fullscreen';
-import { getMonaco, getPrettier } from './deps';
+import { ensurePrettier, getMonaco } from './deps';
 import { makeToc } from './maketoc';
 import { initQRCode } from './preview/qrcode';
 import { exportHTML } from './exporthtml';
@@ -31,7 +30,6 @@ import { initExcel } from './preview/excel';
 import { exportMarkMapHTML } from './exportmarkmap';
 import { lazyload } from './preview/lazyload';
 // import emojiData from '@emoji-mart/data'
-import { Picker } from 'emoji-mart';
 import { setHeadLineNumber } from './preview/headlinenumber';
 import { initFlowChart } from './preview/flowchart';
 // import { domDiff } from './diff';
@@ -40,6 +38,19 @@ import { ToolIcon } from './toolicon';
 const THEME_ID = 'mdeditor_theme_style';
 const THEMECACHE = new Map();
 const md = createMarkdown();
+let emojiPickerModulePromise;
+
+function getEmojiPicker() {
+    if (!emojiPickerModulePromise) {
+        emojiPickerModulePromise = import('emoji-mart').then((mod) => {
+            return mod.Picker || (mod.default && mod.default.Picker) || mod.default || null;
+        }).catch(() => {
+            emojiPickerModulePromise = null;
+            return null;
+        });
+    }
+    return emojiPickerModulePromise;
+}
 
 const exportFilesData = [
     {
@@ -199,6 +210,8 @@ export class MDEditor extends Eventable(Base) {
         }, 16);
 
         this.frameId = null;
+        this.emojiPicker = null;
+        this.emojiPickerLoadingPromise = null;
         let time = now();
         const loop = () => {
             if (now() - time > this.options.updatePreviewDuration) {
@@ -409,33 +422,34 @@ export class MDEditor extends Eventable(Base) {
             keybindings: [monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF],
             contextMenuGroupId: '9_cutcopypaste', // 所属菜单的分组
             run: () => {
-                const prettier = getPrettier();
-                if (!prettier) {
-                    const message = 'not find prettier';
-                    console.warn(message);
-                    miniToastr.warn(message);
-                    return;
-                }
-                if (!prettier.prettierPlugins) {
-                    const message = 'not find prettier plugins';
-                    console.warn(message);
-                    miniToastr.warn(message);
-                    return;
-                }
-                prettier.format(this.getValue(), Object.assign({}, this.options.prettierOptions, {
-                    parser: 'markdown',
-                    plugins: prettier.prettierPlugins
-                })).then(text => {
-                    const [range] = this.getWholeRange();
-                    this.editor.executeEdits('', [
-                        {
-                            range,
-                            text
-                        }
-                    ]);
-                    setTimeout(() => {
-                        this._syncScroll();
-                    }, 1000);
+                ensurePrettier().then(prettier => {
+                    if (!prettier) {
+                        const message = 'not find prettier';
+                        console.warn(message);
+                        miniToastr.warn(message);
+                        return;
+                    }
+                    if (!prettier.prettierPlugins) {
+                        const message = 'not find prettier plugins';
+                        console.warn(message);
+                        miniToastr.warn(message);
+                        return;
+                    }
+                    prettier.format(this.getValue(), Object.assign({}, this.options.prettierOptions, {
+                        parser: 'markdown',
+                        plugins: prettier.prettierPlugins
+                    })).then(text => {
+                        const [range] = this.getWholeRange();
+                        this.editor.executeEdits('', [
+                            {
+                                range,
+                                text
+                            }
+                        ]);
+                        setTimeout(() => {
+                            this._syncScroll();
+                        }, 1000);
+                    });
                 });
             }
         });
@@ -491,30 +505,47 @@ export class MDEditor extends Eventable(Base) {
     _initEmoji() {
         const emojiDom = createFloatPanel();
         this.emojiDom = emojiDom;
-        const onEmojiSelect = (data) => {
-            // console.log(data);
-            const native = data.native;
-            const [range] = this.getCurrentRange();
-            this.editor.executeEdits('', [
-                {
-                    range,
-                    text: `${native}\n`
-                }
-            ]);
-        };
-        const pickerOptions = {
-            onEmojiSelect,
-            data: async () => {
-                const response = await fetch(this.options.emojiURL);
-                return response.json();
-            }
-        };
-        const picker = new Picker(pickerOptions);
-        emojiDom.appendChild(picker);
-
         this.mainDom.appendChild(emojiDom);
         this.clickOutSide.addDom(this.emojiDom);
         on(emojiDom, 'clickoutside', hideDomByDisplay);
+    }
+
+    _ensureEmojiPicker() {
+        if (this.emojiPicker) {
+            return Promise.resolve(this.emojiPicker);
+        }
+        if (this.emojiPickerLoadingPromise) {
+            return this.emojiPickerLoadingPromise;
+        }
+        this.emojiPickerLoadingPromise = getEmojiPicker().then((Picker) => {
+            if (!Picker) {
+                return null;
+            }
+            const onEmojiSelect = (data) => {
+                const native = data.native;
+                const [range] = this.getCurrentRange();
+                this.editor.executeEdits('', [
+                    {
+                        range,
+                        text: `${native}\n`
+                    }
+                ]);
+            };
+            const picker = new Picker({
+                onEmojiSelect,
+                data: async () => {
+                    const response = await fetch(this.options.emojiURL);
+                    return response.json();
+                }
+            });
+            this.emojiPicker = picker;
+            this.emojiDom.appendChild(picker);
+            return picker;
+        }).catch(() => {
+            this.emojiPickerLoadingPromise = null;
+            return null;
+        });
+        return this.emojiPickerLoadingPromise;
     }
 
     _exportFile(type) {
@@ -567,9 +598,13 @@ export class MDEditor extends Eventable(Base) {
         } else if (type === 'print') {
             printJS(this.previewDom.id, 'html');
         } else if (type === 'markmap') {
-            const markmap = fromatMarkMapJSON(this.mdText);
-            text = exportMarkMapHTML(markmap);
-            fileType = 'html';
+            import('./preview/markmap').then(({ fromatMarkMapJSON }) => {
+                const markmap = fromatMarkMapJSON(this.mdText);
+                const html = exportMarkMapHTML(markmap);
+                const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+                saveAs(blob, `${now()}.html`);
+            });
+            return;
         }
         if (!text) {
             return;

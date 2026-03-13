@@ -722,10 +722,12 @@ const ICONS = [
             const emojiDom = mdEditor.emojiDom;
             const iconDom = this.getDom();
             const display = checkDomDisplay(emojiDom);
-            setTimeout(() => {
-                setDomDisplay(emojiDom, display);
-                updateDomPosition(iconDom, emojiDom);
-            }, 32);
+            mdEditor._ensureEmojiPicker().then(() => {
+                setTimeout(() => {
+                    setDomDisplay(emojiDom, display);
+                    updateDomPosition(iconDom, emojiDom);
+                }, 32);
+            });
         }
     },
     {
