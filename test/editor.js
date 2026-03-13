@@ -51,9 +51,6 @@ export function getEditor() {
 
 export function destroyEditor() {
   if (mdEditor) {
-    if (mdEditor.editor && typeof mdEditor.editor.dispose === "function") {
-      mdEditor.editor.dispose();
-    }
     if (typeof mdEditor.dispose === "function") {
       mdEditor.dispose();
     }

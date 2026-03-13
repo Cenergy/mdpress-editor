@@ -195,6 +195,8 @@ export class MDEditor extends Eventable(Base) {
         this.editorUpdateValues = [];
         this.themeName = '';
         this.clickOutSide = create();
+        this._disposed = false;
+        this._disposers = [];
         this.themeHistroy = [];
         this._initIconFont();
         this._initDoms();
@@ -204,7 +206,7 @@ export class MDEditor extends Eventable(Base) {
         this._initTools();
         this.setTheme(options.theme);
         this._checkDark();
-        setTimeout(() => {
+        this._initStateTimer = setTimeout(() => {
             this._checkPreviewState();
             this._checkTocState();
         }, 16);
@@ -213,7 +215,10 @@ export class MDEditor extends Eventable(Base) {
         this.emojiPicker = null;
         this.emojiPickerLoadingPromise = null;
         this.previewUpdateTimer = null;
-        on(window, 'resize', () => {
+        this.editorScrollTimer = null;
+        this.previewScrollTimer = null;
+        this.syncScrollTimer = null;
+        this._listen(window, 'resize', () => {
             if (!this.fullScreen) {
                 return;
             }
@@ -224,6 +229,38 @@ export class MDEditor extends Eventable(Base) {
         });
         this.pasteItems = [];
 
+    }
+
+    _registerDisposer(disposer) {
+        if (typeof disposer === 'function') {
+            this._disposers.push(disposer);
+        }
+        return disposer;
+    }
+
+    _listen(target, event, handler, options) {
+        if (!target || !target.addEventListener || !handler) {
+            return null;
+        }
+        target.addEventListener(event, handler, options);
+        this._registerDisposer(() => {
+            target.removeEventListener(event, handler, options);
+        });
+        return handler;
+    }
+
+    _trackDisposable(disposable) {
+        if (!disposable || typeof disposable.dispose !== 'function') {
+            return disposable;
+        }
+        this._registerDisposer(() => {
+            disposable.dispose();
+        });
+        return disposable;
+    }
+
+    _isUnavailable() {
+        return this._disposed;
     }
 
     _initIconFont() {
@@ -262,7 +299,7 @@ export class MDEditor extends Eventable(Base) {
         editorContainer.className = 'mdeditor-editor-container';
         editorContainer.appendChild(editorDom);
         editorContainer.appendChild(previewDom);
-        editorContainer.addEventListener('paste', e => {
+        this._listen(editorContainer, 'paste', e => {
             if (e.clipboardData) {
                 this.pasteItems = Array.prototype.map.call(e.clipboardData.items, (item) => {
                     return {
@@ -346,26 +383,26 @@ export class MDEditor extends Eventable(Base) {
         };
 
         // 监听切换按钮点击事件
-        on(toggleBtn, 'click', (e) => {
+        this._listen(toggleBtn, 'click', (e) => {
             e.stopPropagation();
             currentMode = currentMode === 'write' ? 'read' : 'write';
             updateLayout();
         });
 
         // 监听窗口大小变化自动更新布局
-        on(window, 'resize', updateLayout);
+        this._listen(window, 'resize', updateLayout);
         // 初始化时延迟执行一次布局更新
-        setTimeout(updateLayout, 100);
+        this._layoutTimer = setTimeout(updateLayout, 100);
         // mainDom.appendChild(editorDom);
         // mainDom.appendChild(previewDom);
 
         this.editor = monaco.editor.create(this.editorDom, Object.assign({}, OPTIONS.monacoOptions, monacoOptions));
-        this.editor.onDidChangeModelContent(() => {
+        this._trackDisposable(this.editor.onDidChangeModelContent(() => {
             const value = this.getValue();
             this.editorUpdateValues.push(value);
             this._schedulePreviewUpdate();
-        });
-        this.editor.onDidScrollChange((e) => {
+        }));
+        this._trackDisposable(this.editor.onDidScrollChange((e) => {
             if (this.isScrollingPreview) {
                 return;
             }
@@ -378,8 +415,8 @@ export class MDEditor extends Eventable(Base) {
             this.editorScrollTimer = setTimeout(() => {
                 this.isScrollingEditor = false;
             }, 100);
-        });
-        on(this.previewDom, 'scroll', () => {
+        }));
+        this._listen(this.previewDom, 'scroll', () => {
             if (this.isScrollingEditor) {
                 return;
             }
@@ -392,7 +429,7 @@ export class MDEditor extends Eventable(Base) {
                 this.isScrollingPreview = false;
             }, 100);
         });
-        this.editor.onDidPaste((e) => {
+        this._trackDisposable(this.editor.onDidPaste((e) => {
             if (!this.options.autoParseVSCodePasteData) {
                 return;
             }
@@ -407,8 +444,8 @@ export class MDEditor extends Eventable(Base) {
                     text: '```' + result.language + '\n' + result.text + '\n```\n'
                 }
             ]);
-        });
-        this.editor.addAction({
+        }));
+        this._trackDisposable(this.editor.addAction({
             id: '', // 菜单项 id
             label: 'Format Code', // 菜单项名称
             keybindings: [monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF],
@@ -438,13 +475,17 @@ export class MDEditor extends Eventable(Base) {
                                 text
                             }
                         ]);
-                        setTimeout(() => {
+                        if (this.syncScrollTimer) {
+                            clearTimeout(this.syncScrollTimer);
+                        }
+                        this.syncScrollTimer = setTimeout(() => {
+                            this.syncScrollTimer = null;
                             this._syncScroll();
                         }, 1000);
                     });
                 });
             }
-        });
+        }));
     }
 
     _initTools() {
@@ -463,14 +504,14 @@ export class MDEditor extends Eventable(Base) {
             return li;
         });
         lis.forEach(li => {
-            on(li, 'click', e => {
+            this._listen(li, 'click', e => {
                 const theme = e.target.dataset.theme;
                 this._activeThemeItem(e.target);
                 this.setTheme(theme);
             });
         });
         this.clickOutSide.addDom(this.themeDom);
-        on(themeDom, 'clickoutside', hideDomByDisplay);
+        this._listen(themeDom, 'clickoutside', hideDomByDisplay);
     }
 
     _initExportFile() {
@@ -485,13 +526,13 @@ export class MDEditor extends Eventable(Base) {
             return li;
         });
         lis.forEach(li => {
-            on(li, 'click', e => {
+            this._listen(li, 'click', e => {
                 const theme = e.target.dataset.type;
                 this._exportFile(theme);
             });
         });
         this.clickOutSide.addDom(this.exportFileDom);
-        on(exportFileDom, 'clickoutside', hideDomByDisplay);
+        this._listen(exportFileDom, 'clickoutside', hideDomByDisplay);
     }
 
     _initEmoji() {
@@ -499,10 +540,13 @@ export class MDEditor extends Eventable(Base) {
         this.emojiDom = emojiDom;
         this.mainDom.appendChild(emojiDom);
         this.clickOutSide.addDom(this.emojiDom);
-        on(emojiDom, 'clickoutside', hideDomByDisplay);
+        this._listen(emojiDom, 'clickoutside', hideDomByDisplay);
     }
 
     _ensureEmojiPicker() {
+        if (this._isUnavailable()) {
+            return Promise.resolve(null);
+        }
         if (this.emojiPicker) {
             return Promise.resolve(this.emojiPicker);
         }
@@ -510,12 +554,21 @@ export class MDEditor extends Eventable(Base) {
             return this.emojiPickerLoadingPromise;
         }
         this.emojiPickerLoadingPromise = getEmojiPicker().then((Picker) => {
+            if (this._isUnavailable()) {
+                return null;
+            }
             if (!Picker) {
                 return null;
             }
             const onEmojiSelect = (data) => {
+                if (this._isUnavailable() || !this.editor) {
+                    return;
+                }
                 const native = data.native;
                 const [range] = this.getCurrentRange();
+                if (!range) {
+                    return;
+                }
                 this.editor.executeEdits('', [
                     {
                         range,
@@ -531,7 +584,9 @@ export class MDEditor extends Eventable(Base) {
                 }
             });
             this.emojiPicker = picker;
-            this.emojiDom.appendChild(picker);
+            if (this.emojiDom) {
+                this.emojiDom.appendChild(picker);
+            }
             return picker;
         }).catch(() => {
             this.emojiPickerLoadingPromise = null;
@@ -541,7 +596,13 @@ export class MDEditor extends Eventable(Base) {
     }
 
     _exportFile(type) {
+        if (this._isUnavailable()) {
+            return this;
+        }
         const previewDom = this.previewDom;
+        if (!previewDom) {
+            return this;
+        }
         // const children = this.previewDom.children;
         // const scrollTopDom = children[children.length - 1];
         // const addScroll = () => {
@@ -553,6 +614,9 @@ export class MDEditor extends Eventable(Base) {
         // };
         let text, fileType;
         if (type === 'markdown') {
+            if (!this.editor) {
+                return this;
+            }
             text = this.editor.getValue();
             fileType = 'md';
         } else if (type === 'html') {
@@ -606,6 +670,9 @@ export class MDEditor extends Eventable(Base) {
     }
 
     _checkPreviewState() {
+        if (this._isUnavailable() || !this.editorDom || !this.previewDom) {
+            return this;
+        }
         const { preview } = this;
         if (preview) {
             this.editorDom.style.width = '50%';
@@ -618,6 +685,9 @@ export class MDEditor extends Eventable(Base) {
     }
 
     _checkTocState() {
+        if (this._isUnavailable() || !this.editorContainer || !this.tocDom) {
+            return this;
+        }
         const { tocOpen } = this;
         let width = 300;
         if (!tocOpen) {
@@ -633,7 +703,7 @@ export class MDEditor extends Eventable(Base) {
     }
 
     _initTocData() {
-        if (!this.tocOpen) {
+        if (this._isUnavailable() || !this.tocOpen || !this.previewDom || !this.tocDom || !this.editor) {
             return this;
         }
         makeToc(this.previewDom, '.mdeditor-toc');
@@ -693,6 +763,9 @@ export class MDEditor extends Eventable(Base) {
     }
 
     setValue(value) {
+        if (this._isUnavailable()) {
+            return this;
+        }
         if (!this.editor) {
             console.error('not find editor');
             return this;
@@ -702,15 +775,18 @@ export class MDEditor extends Eventable(Base) {
     }
 
     getValue() {
+        if (this._isUnavailable()) {
+            return '';
+        }
         if (!this.editor) {
             console.error('not find editor');
-            return this;
+            return '';
         }
         return this.editor.getValue();
     }
 
     _schedulePreviewUpdate() {
-        if (!this.preview) {
+        if (this._isUnavailable() || !this.preview) {
             return this;
         }
         if (this.previewUpdateTimer) {
@@ -718,6 +794,9 @@ export class MDEditor extends Eventable(Base) {
         }
         const duration = Number(this.options.updatePreviewDuration) || 0;
         this.previewUpdateTimer = setTimeout(() => {
+            if (this._isUnavailable()) {
+                return;
+            }
             this.previewUpdateTimer = null;
             this.updatePreview();
         }, duration);
@@ -725,7 +804,7 @@ export class MDEditor extends Eventable(Base) {
     }
 
     updatePreview() {
-        if (!this.preview) {
+        if (this._isUnavailable() || !this.preview || !this.previewDom || !this.editor) {
             return this;
         }
         const len = this.editorUpdateValues.length;
@@ -734,6 +813,9 @@ export class MDEditor extends Eventable(Base) {
         }
         const value = this.editorUpdateValues[len - 1];
         checkInclude(value, (text) => {
+            if (this._isUnavailable() || !this.previewDom || !this.editor) {
+                return;
+            }
             this.mdText = text;
             let html = md.render(text);
             html = lazyload(html, this);
@@ -783,7 +865,7 @@ export class MDEditor extends Eventable(Base) {
     }
 
     _syncScroll() {
-        if (!this._scrollEvent || !this.preview) {
+        if (this._isUnavailable() || !this._scrollEvent || !this.preview || !this.previewDom || !this.editor) {
             return this;
         }
         const { scrollHeight, scrollTop } = this._scrollEvent;
@@ -804,14 +886,21 @@ export class MDEditor extends Eventable(Base) {
     }
 
     _syncEditorScroll() {
+        if (this._isUnavailable() || !this.previewDom || !this.editor) {
+            return this;
+        }
         const lineNumber = calEditorScroll(this.previewDom);
         if (lineNumber) {
             this.editor.revealLineNearTop(lineNumber);
         }
+        return this;
     }
 
     // https://github.com/microsoft/monaco-editor/issues/639
     getSelectText() {
+        if (this._isUnavailable() || !this.editor) {
+            return;
+        }
         const range = this.editor.getSelection();
         const text = this.editor.getModel().getValueInRange(range);
         if (!text) {
@@ -822,6 +911,9 @@ export class MDEditor extends Eventable(Base) {
 
     // https://github.com/microsoft/monaco-editor/issues/172
     getSelectRange() {
+        if (this._isUnavailable() || !this.editor) {
+            return;
+        }
         const select = this.editor.getSelection();
         if (!select) {
             return;
@@ -845,7 +937,13 @@ export class MDEditor extends Eventable(Base) {
 
     // https://blog.csdn.net/Anchor_CHEN/article/details/127223203
     getCurrentRange() {
+        if (this._isUnavailable() || !this.editor) {
+            return [];
+        }
         const position = this.editor.getPosition();
+        if (!position) {
+            return [];
+        }
         const range = {
             startLineNumber: position.lineNumber,
             endLineNumber: position.lineNumber,
@@ -856,7 +954,13 @@ export class MDEditor extends Eventable(Base) {
     }
 
     getWholeRange() {
+        if (this._isUnavailable() || !this.editor) {
+            return [];
+        }
         const model = this.editor.getModel();
+        if (!model) {
+            return [];
+        }
         const linesNumber = model.getLineCount();
         const range = {
             startLineNumber: 1,
@@ -881,14 +985,23 @@ export class MDEditor extends Eventable(Base) {
     }
 
     getContainer() {
+        if (this._isUnavailable()) {
+            return null;
+        }
         return this.dom;
     }
 
     getEditor() {
+        if (this._isUnavailable()) {
+            return null;
+        }
         return this.editor;
     }
 
     _activeThemeItem(item) {
+        if (this._isUnavailable() || !this.themeDom) {
+            return;
+        }
         const items = this.themeDom.querySelectorAll('.mdeditor-theme-select-item');
         if (typeof item === 'string') {
             for (let i = 0, len = items.length; i < len; i++) {
@@ -908,6 +1021,9 @@ export class MDEditor extends Eventable(Base) {
     }
 
     setTheme(theme) {
+        if (this._isUnavailable()) {
+            return this;
+        }
         if (theme === this.themeName) {
             console.warn(`'${theme}' equal current theme '${this.themeName}'`);
             return this;
@@ -919,6 +1035,9 @@ export class MDEditor extends Eventable(Base) {
         this.themeName = theme;
         this.themeHistroy.push(theme);
         const themeChange = (text) => {
+            if (this._isUnavailable()) {
+                return this;
+            }
             if (theme !== this.themeName) {
                 console.warn(`'${theme}' theme ignored,the new '${this.themeName}' will fetch`);
                 return this;
@@ -985,12 +1104,18 @@ export class MDEditor extends Eventable(Base) {
     }
 
     getIcons() {
+        if (this._isUnavailable() || !this.toolsDom) {
+            return [];
+        }
         return Array.prototype.map.call(this.toolsDom.children, c => {
             return c.parent;
         });
     }
 
     openPreview() {
+        if (this._isUnavailable()) {
+            return this;
+        }
         if (this.isPreview()) {
             return this;
         }
@@ -1000,6 +1125,9 @@ export class MDEditor extends Eventable(Base) {
     }
 
     closePreview() {
+        if (this._isUnavailable()) {
+            return this;
+        }
         if (!this.isPreview()) {
             return this;
         }
@@ -1009,6 +1137,9 @@ export class MDEditor extends Eventable(Base) {
     }
 
     openFullScreen() {
+        if (this._isUnavailable()) {
+            return this;
+        }
         if (this.isFullScreen()) {
             return this;
         }
@@ -1017,6 +1148,9 @@ export class MDEditor extends Eventable(Base) {
     }
 
     closeFullScreen() {
+        if (this._isUnavailable()) {
+            return this;
+        }
         if (!this.isFullScreen()) {
             return this;
         }
@@ -1025,6 +1159,9 @@ export class MDEditor extends Eventable(Base) {
     }
 
     openToc() {
+        if (this._isUnavailable()) {
+            return this;
+        }
         if (this.isToc()) {
             return this;
         }
@@ -1034,6 +1171,9 @@ export class MDEditor extends Eventable(Base) {
     }
 
     closeToc() {
+        if (this._isUnavailable()) {
+            return this;
+        }
         if (!this.isToc()) {
             return this;
         }
@@ -1043,6 +1183,9 @@ export class MDEditor extends Eventable(Base) {
     }
 
     _checkDark() {
+        if (this._isUnavailable() || !this.toolsDom || !this.editorDom || !this.tocDom || !this.exportFileDom || !this.themeDom || !this.editor) {
+            return this;
+        }
         const iconDoms = Array.prototype.map.call(this.toolsDom.children, (dom) => {
             return dom;
         });
@@ -1079,16 +1222,23 @@ export class MDEditor extends Eventable(Base) {
         }
         this.setTheme(dark ? 'github-dark' : previewTheme);
         this.fire(dark ? 'opendark' : 'closedark', { dark });
+        return this;
     }
 
     openDark() {
+        if (this._isUnavailable()) {
+            return this;
+        }
         this.dark = true;
-        return this.checkDark();
+        return this._checkDark();
     }
 
     closeDark() {
+        if (this._isUnavailable()) {
+            return this;
+        }
         this.dark = false;
-        return this.checkDark();
+        return this._checkDark();
     }
 
     isDark() {
@@ -1096,9 +1246,91 @@ export class MDEditor extends Eventable(Base) {
     }
 
     addToolIcon(options) {
+        if (this._isUnavailable() || !this.toolsDom) {
+            return null;
+        }
         const toolIcon = new ToolIcon(options);
         toolIcon.addTo(this);
         return toolIcon;
+    }
+
+    dispose() {
+        if (this._disposed) {
+            return this;
+        }
+        this._disposed = true;
+        if (this._initStateTimer) {
+            clearTimeout(this._initStateTimer);
+            this._initStateTimer = null;
+        }
+        if (this._layoutTimer) {
+            clearTimeout(this._layoutTimer);
+            this._layoutTimer = null;
+        }
+        if (this.previewUpdateTimer) {
+            clearTimeout(this.previewUpdateTimer);
+            this.previewUpdateTimer = null;
+        }
+        if (this.editorScrollTimer) {
+            clearTimeout(this.editorScrollTimer);
+            this.editorScrollTimer = null;
+        }
+        if (this.previewScrollTimer) {
+            clearTimeout(this.previewScrollTimer);
+            this.previewScrollTimer = null;
+        }
+        if (this.syncScrollTimer) {
+            clearTimeout(this.syncScrollTimer);
+            this.syncScrollTimer = null;
+        }
+        if (this.imageViewer) {
+            this.imageViewer.destroy();
+            this.imageViewer = null;
+        }
+        if (this.swipers && this.swipers.length) {
+            this.swipers.forEach((swiper) => {
+                if (swiper && typeof swiper.destroy === 'function') {
+                    swiper.destroy();
+                }
+            });
+            this.swipers = [];
+        }
+        if (this.flowcharts && this.flowcharts.length) {
+            this.flowcharts.forEach((flowchart) => {
+                if (flowchart && typeof flowchart.clean === 'function') {
+                    flowchart.clean();
+                }
+            });
+            this.flowcharts = [];
+        }
+        if (this.clickOutSide && typeof this.clickOutSide.dispose === 'function') {
+            this.clickOutSide.dispose();
+        }
+        const disposers = this._disposers || [];
+        while (disposers.length) {
+            const disposer = disposers.pop();
+            try {
+                disposer();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        this._disposers = [];
+        if (this.editor && typeof this.editor.dispose === 'function') {
+            this.editor.dispose();
+            this.editor = null;
+        }
+        this.previewDom = null;
+        this.editorDom = null;
+        this.editorContainer = null;
+        this.mainDom = null;
+        this.tocDom = null;
+        this.toolsDom = null;
+        this.themeDom = null;
+        this.exportFileDom = null;
+        this.emojiDom = null;
+        this.dom = null;
+        return this;
     }
 }
 
