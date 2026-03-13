@@ -133,7 +133,7 @@ function renderAttrs(token) {
 
 export function installPlugins(md) {
     md.use(emojiPlugin, {});
-    md.use(markdownAnchor, { level: 1, permalink: true, permalinkBefore: true, permalinkSymbol: '#' });
+    md.use(markdownAnchor, { level: 1 });
     md.use(markdownToc, {});
     containerPlugin(md, { hasSingleTheme: false });
     katexPlugin(md);
