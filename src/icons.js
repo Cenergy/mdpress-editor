@@ -853,8 +853,11 @@ const ICONS_RIGHT = [
         position: 'right',
         click: function () {
             const mdEditor = this.getMDEditor();
-            mdEditor.tocOpen = !mdEditor.tocOpen;
-            mdEditor._checkTocState();
+            if (mdEditor.isToc()) {
+                mdEditor.closeToc();
+            } else {
+                mdEditor.openToc();
+            }
         }
     },
     {
@@ -893,8 +896,11 @@ const ICONS_RIGHT = [
         position: 'right',
         click: function () {
             const mdEditor = this.getMDEditor();
-            mdEditor.preview = !mdEditor.preview;
-            mdEditor._checkPreviewState();
+            if (mdEditor.isPreview()) {
+                mdEditor.closePreview();
+            } else {
+                mdEditor.openPreview();
+            }
         }
     },
     {
@@ -912,8 +918,11 @@ const ICONS_RIGHT = [
         position: 'right',
         click: function () {
             const mdEditor = this.getMDEditor();
-            mdEditor.dark = !mdEditor.dark;
-            mdEditor._checkDark();
+            if (mdEditor.isDark()) {
+                mdEditor.closeDark();
+            } else {
+                mdEditor.openDark();
+            }
         }
     },
     {

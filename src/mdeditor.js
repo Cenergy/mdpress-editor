@@ -2,7 +2,7 @@
 import { saveAs } from 'file-saver';
 import { create } from 'domclickoutside';
 import morphdom from 'morphdom';
-import { ACTIVE_CLASS, createDom, domHide, domId, domShow, domSizeByWindow, extend, formatHeadContents, getDom, getDomDisplay, hideLoading, isTitle, now, on, showLoading, trimTitle } from './util';
+import { ACTIVE_CLASS, createDom, domHide, domId, domShow, domSizeByWindow, extend, formatHeadContents, getDom, getDomDisplay, hideLoading, isTitle, now, showLoading, trimTitle } from './util';
 import { createMarkdown } from './markdown';
 import { createDefaultIcons } from './icons';
 import Eventable from './Eventable';
@@ -218,6 +218,9 @@ export class MDEditor extends Eventable(Base) {
         this.editorScrollTimer = null;
         this.previewScrollTimer = null;
         this.syncScrollTimer = null;
+        this._findTocTitleRow = null;
+        this._tocTitleRowMap = null;
+        this._tocTitleRowCacheKey = '';
         this._listen(window, 'resize', () => {
             if (!this.fullScreen) {
                 return;
@@ -319,6 +322,27 @@ export class MDEditor extends Eventable(Base) {
 
         const tocDom = this.tocDom = createDom('div');
         tocDom.className = 'mdeditor-toc';
+        this._listen(tocDom, 'click', (e) => {
+            if (this._isUnavailable() || !this.tocOpen || !this.editor) {
+                return;
+            }
+            const target = e.target;
+            if (!target || typeof target.closest !== 'function') {
+                return;
+            }
+            const a = target.closest('a');
+            if (!a || !this.tocDom.contains(a) || !a.id) {
+                return;
+            }
+            if (typeof this._findTocTitleRow !== 'function') {
+                return;
+            }
+            const row = this._findTocTitleRow(a);
+            if (row) {
+                const top = this.editor.getTopForLineNumber(row);
+                this.editor.setScrollTop(top);
+            }
+        });
 
         const mainDom = this.mainDom = createDom('div');
         mainDom.className = 'mdeditor-main';
@@ -712,54 +736,48 @@ export class MDEditor extends Eventable(Base) {
             dom.id = dom.id || domId();
             dom.textContent = trimTitle(dom.textContent);
         });
-        const findDomPosition = (a, currentTitle) => {
-            const result = [];
-            aLinks.forEach(dom => {
-                let title = dom.textContent;
-                title = trimTitle(title);
-                if (title === currentTitle) {
-                    result.push(dom);
-                }
-            });
-            const index = result.indexOf(a);
-            return Math.max(index, 0) + 1;
-        };
         const model = this.editor.getModel();
         const lineCount = model.getLineCount();
         const headContents = formatHeadContents(this.previewDom);
-        const findTitleRow = (a) => {
-            let title = a.textContent;
-            title = trimTitle(title);
-            const index = findDomPosition(a, title);
-            let idx = 0;
-            for (let lineNum = 1; lineNum <= lineCount; lineNum++) {
-                let content = model.getLineContent(lineNum);
-                if (isTitle(content, headContents)) {
-                    content = trimTitle(content);
-                    if (content.indexOf(title) === 0) {
-                        idx++;
-                        if (idx === index) {
-                            return lineNum;
+        const headingRows = [];
+        for (let lineNum = 1; lineNum <= lineCount; lineNum++) {
+            let content = model.getLineContent(lineNum);
+            if (!isTitle(content, headContents)) {
+                continue;
+            }
+            content = trimTitle(content);
+            headingRows.push({ title: content, row: lineNum });
+        }
+        const tocTexts = Array.prototype.map.call(aLinks, dom => trimTitle(dom.textContent || ''));
+        const cacheKey = `${tocTexts.join('\n')}__${headingRows.map(({ title, row }) => `${title}@${row}`).join('\n')}`;
+        if (cacheKey !== this._tocTitleRowCacheKey || !this._tocTitleRowMap) {
+            const tocTitleCountMap = new Map();
+            const titleRowMap = new Map();
+            aLinks.forEach(a => {
+                const title = trimTitle(a.textContent || '');
+                const currentCount = (tocTitleCountMap.get(title) || 0) + 1;
+                tocTitleCountMap.set(title, currentCount);
+                let count = 0;
+                for (let i = 0; i < headingRows.length; i++) {
+                    const headingRow = headingRows[i];
+                    if (headingRow.title.indexOf(title) === 0) {
+                        count++;
+                        if (count === currentCount) {
+                            titleRowMap.set(a.id, headingRow.row);
+                            break;
                         }
                     }
                 }
-            }
-        };
-
-        const linkClick = (e) => {
-            const a = e.target;
-            if (!a.id) {
+            });
+            this._tocTitleRowMap = titleRowMap;
+            this._tocTitleRowCacheKey = cacheKey;
+        }
+        this._findTocTitleRow = (a) => {
+            if (!this._tocTitleRowMap) {
                 return;
             }
-            const row = findTitleRow(a);
-            if (row) {
-                const top = this.editor.getTopForLineNumber(row);
-                this.editor.setScrollTop(top);
-            }
+            return this._tocTitleRowMap.get(a.id);
         };
-        aLinks.forEach(a => {
-            on(a, 'click', linkClick);
-        });
     }
 
     setValue(value) {
@@ -1220,7 +1238,10 @@ export class MDEditor extends Eventable(Base) {
                 break;
             }
         }
-        this.setTheme(dark ? 'github-dark' : previewTheme);
+        const targetTheme = dark ? 'github-dark' : previewTheme;
+        if (targetTheme !== this.themeName) {
+            this.setTheme(targetTheme);
+        }
         this.fire(dark ? 'opendark' : 'closedark', { dark });
         return this;
     }
@@ -1329,6 +1350,9 @@ export class MDEditor extends Eventable(Base) {
         this.themeDom = null;
         this.exportFileDom = null;
         this.emojiDom = null;
+        this._findTocTitleRow = null;
+        this._tocTitleRowMap = null;
+        this._tocTitleRowCacheKey = '';
         this.dom = null;
         return this;
     }

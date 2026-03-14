@@ -172,7 +172,6 @@ Class.forName("oracle.jdbc.driver.OracleDriver")
 
 ## include markdown
 
-include:./snip.md
 
 ## container
 
