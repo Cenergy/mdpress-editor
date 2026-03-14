@@ -4,7 +4,7 @@ import emojiPlugin from 'markdown-it-emoji';
 import markdownAnchor from 'markdown-it-anchor';
 import markdownToc from 'markdown-it-toc-done-right';
 import { containerPlugin } from './plugins/plugin_container';
-import { katexPlugin, ketexRender } from './plugins/plugin_katex';
+import { katexPlugin, katexRender } from './plugins/plugin_katex';
 import { mermaidPlugin, mermaidRender } from './plugins/plugin_mermaid';
 import { getShikiHighlighter } from './deps';
 import { swiperPlugin } from './plugins/plugin_swiper';
@@ -53,42 +53,50 @@ import vim from 'highlight.js/lib/languages/vim';
 import wasm from 'highlight.js/lib/languages/wasm';
 import xml from 'highlight.js/lib/languages/xml';
 import { flowChartPlugin } from './plugins/plugin_flowchart';
-hljs.registerLanguage('javascript', javascript);
-hljs.registerLanguage('java', java);
-hljs.registerLanguage('bash', bash);
-hljs.registerLanguage('c', c);
-hljs.registerLanguage('cpp', cpp);
-hljs.registerLanguage('csharp', csharp);
-hljs.registerLanguage('css', css);
-hljs.registerLanguage('dart', dart);
-hljs.registerLanguage('dos', dos);
-hljs.registerLanguage('glsl', glsl);
-hljs.registerLanguage('go', go);
-hljs.registerLanguage('gradle', gradle);
-hljs.registerLanguage('graphql', graphql);
-hljs.registerLanguage('json', json);
-hljs.registerLanguage('kotlin', kotlin);
-hljs.registerLanguage('latex', latex);
-hljs.registerLanguage('less', less);
-hljs.registerLanguage('markdown', markdown);
-hljs.registerLanguage('matlab', matlab);
-hljs.registerLanguage('nginx', nginx);
-hljs.registerLanguage('objectivec', objectivec);
-hljs.registerLanguage('pgsql', pgsql);
-hljs.registerLanguage('php', php);
-hljs.registerLanguage('powershell', powershell);
-hljs.registerLanguage('python', python);
-hljs.registerLanguage('r', r);
-hljs.registerLanguage('ruby', ruby);
-hljs.registerLanguage('rust', rust);
-hljs.registerLanguage('scss', scss);
-hljs.registerLanguage('shell', shell);
-hljs.registerLanguage('sql', sql);
-hljs.registerLanguage('swift', swift);
-hljs.registerLanguage('typescript', typescript);
-hljs.registerLanguage('vim', vim);
-hljs.registerLanguage('wasm', wasm);
-hljs.registerLanguage('xml', xml);
+
+// 统一维护高亮语言列表，避免分散的重复注册语句。
+const HIGHLIGHT_LANGUAGES = [
+    ['javascript', javascript],
+    ['java', java],
+    ['bash', bash],
+    ['c', c],
+    ['cpp', cpp],
+    ['csharp', csharp],
+    ['css', css],
+    ['dart', dart],
+    ['dos', dos],
+    ['glsl', glsl],
+    ['go', go],
+    ['gradle', gradle],
+    ['graphql', graphql],
+    ['json', json],
+    ['kotlin', kotlin],
+    ['latex', latex],
+    ['less', less],
+    ['markdown', markdown],
+    ['matlab', matlab],
+    ['nginx', nginx],
+    ['objectivec', objectivec],
+    ['pgsql', pgsql],
+    ['php', php],
+    ['powershell', powershell],
+    ['python', python],
+    ['r', r],
+    ['ruby', ruby],
+    ['rust', rust],
+    ['scss', scss],
+    ['shell', shell],
+    ['sql', sql],
+    ['swift', swift],
+    ['typescript', typescript],
+    ['vim', vim],
+    ['wasm', wasm],
+    ['xml', xml]
+];
+
+HIGHLIGHT_LANGUAGES.forEach(([name, parser]) => {
+    hljs.registerLanguage(name, parser);
+});
 
 const HTML_ESCAPE_TEST_RE = /[&<>"]/;
 const HTML_ESCAPE_REPLACE_RE = /[&<>"]/g;
@@ -156,7 +164,7 @@ export function createMarkdown() {
             lang = lang || '';
             lang = lang.toLowerCase();
             if (lang === 'ketex') {
-                return ketexRender(str);
+                return katexRender(str);
             } else if (lang === 'mermaid') {
                 return mermaidRender(str);
             }
@@ -165,14 +173,13 @@ export function createMarkdown() {
             if (shikiHighlighter && shikiHighlighter.codeToHtml) {
                 return shikiHighlighter.codeToHtml(str, { lang, theme: 'nord' });
             }
-            // const hljs = getHightLight();
             if (lang && hljs && hljs.getLanguage(lang)) {
                 try {
                     return hljs.highlight(str, { language: lang }).value;
                 } catch (__) { }
             }
 
-            return str; // use external default escaping
+            return str;
         }
     });
     installPlugins(md);
