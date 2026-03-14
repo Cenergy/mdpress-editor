@@ -2,6 +2,8 @@ import {
     FetchScheduler
 } from 'fetch-scheduler';
 
+const FETCH_REQUEST_COUNT = 6;
+
 export const fetchScheduler = new FetchScheduler({
-    requestCount: 6 // Concurrent number of fetch requests
+    requestCount: FETCH_REQUEST_COUNT
 });

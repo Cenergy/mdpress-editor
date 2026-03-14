@@ -937,7 +937,7 @@ export class MDEditor extends Eventable(Base) {
             return;
         }
         const { startLineNumber, endLineNumber, startColumn, endColumn } = select;
-        const starRange = {
+        const startRange = {
             startLineNumber,
             endLineNumber: startLineNumber,
             startColumn,
@@ -950,7 +950,7 @@ export class MDEditor extends Eventable(Base) {
             endColumn
         };
         // const model = this.editor.getModel();
-        return [starRange, endRange];
+        return [startRange, endRange];
     }
 
     // https://blog.csdn.net/Anchor_CHEN/article/details/127223203

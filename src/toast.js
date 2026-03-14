@@ -1,14 +1,14 @@
 
 import miniToastr from 'mini-toastr';
 
-let miniToastrInit = false;
+let isMiniToastrInitialized = false;
 
 export function initToastr() {
-    if (!miniToastrInit) {
+    if (!isMiniToastrInitialized) {
         miniToastr.init({
             appendTarget: document.body
         });
-        miniToastrInit = true;
+        isMiniToastrInitialized = true;
     }
 }
 

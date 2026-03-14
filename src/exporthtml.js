@@ -1,4 +1,4 @@
-const TEMPLATE = `
+const HTML_TEMPLATE = `
 <!DOCTYPE html>
 <html>
   <meta charset="UTF-8">
@@ -20,8 +20,8 @@ const TEMPLATE = `
     <script>
         const ACTIVE_CLASS = 'active';
 
-        const on = (target, event, hanlder) => {
-            target.addEventListener(event, hanlder);
+        const on = (target, event, handler) => {
+            target.addEventListener(event, handler);
         };
 
         function checkCodeGroup(dom) {
@@ -95,5 +95,5 @@ const TEMPLATE = `
 </html>
 `;
 export function exportHTML(html, styleText) {
-    return TEMPLATE.replaceAll('{html}', html).replaceAll('{style}', styleText);
+    return HTML_TEMPLATE.replaceAll('{html}', html).replaceAll('{style}', styleText);
 }

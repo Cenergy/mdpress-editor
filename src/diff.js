@@ -11,14 +11,15 @@ export function domDiff(dom1, dom2, editor) {
     checkIframe(dom2);
     // initQRCode(dom2);
 
-    const len = Math.max(childNodes.length, newChildNodes.length);
+    const maxLength = Math.max(childNodes.length, newChildNodes.length);
     const diff = {
         add: [],
         remove: [],
         update: []
     };
-    for (let i = 0; i < len; i++) {
-        const node1 = childNodes[i], node2 = newChildNodes[i];
+    for (let i = 0; i < maxLength; i++) {
+        const node1 = childNodes[i];
+        const node2 = newChildNodes[i];
         if (!node1 && node2) {
             diff.add.push({
                 index: i,
@@ -30,7 +31,8 @@ export function domDiff(dom1, dom2, editor) {
                 node: node1
             });
         } else {
-            const html1 = node1.outerHTML, html2 = node2.outerHTML;
+            const html1 = node1.outerHTML;
+            const html2 = node2.outerHTML;
             if (html1 !== html2) {
                 diff.update.push({
                     index: i,

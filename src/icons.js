@@ -230,13 +230,13 @@ const ICONS = [
             if (!validateSelect(result)) {
                 return;
             }
-            const [starRange, endRange] = result;
-            if (rangeEqual(starRange, endRange)) {
+            const [startRange, endRange] = result;
+            if (rangeEqual(startRange, endRange)) {
                 return;
             }
             editor.executeEdits('', [
                 {
-                    range: starRange,
+                    range: startRange,
                     text: '**'
                 },
                 {
@@ -255,13 +255,13 @@ const ICONS = [
             if (!validateSelect(result)) {
                 return;
             }
-            const [starRange, endRange] = result;
-            if (rangeEqual(starRange, endRange)) {
+            const [startRange, endRange] = result;
+            if (rangeEqual(startRange, endRange)) {
                 return;
             }
             editor.executeEdits('', [
                 {
-                    range: starRange,
+                    range: startRange,
                     text: '~~'
                 },
                 {
@@ -280,13 +280,13 @@ const ICONS = [
             if (!validateSelect(result)) {
                 return;
             }
-            const [starRange, endRange] = result;
-            if (rangeEqual(starRange, endRange)) {
+            const [startRange, endRange] = result;
+            if (rangeEqual(startRange, endRange)) {
                 return;
             }
             editor.executeEdits('', [
                 {
-                    range: starRange,
+                    range: startRange,
                     text: '*'
                 },
                 {

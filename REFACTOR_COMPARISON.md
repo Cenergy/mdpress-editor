@@ -46,6 +46,14 @@
 
 - 在 `plugin_helpers.js` 增加关键流程注释，说明 token 清洗与自定义 token 生成意图，便于后续维护。
 
+### 6) Eventable 命名与现代化语法统一
+
+- `src/Eventable.js` 保持 PascalCase 文件名，和导出的类式 mixin 语义一致。
+- `Eventable` 维持 mixin 工厂模式，但将匿名 `class extends Base` 明确为具名 `class EventableMixin extends Base`，提升调试可读性。
+- 事件别名方法改为 `...args` 透传，替代 `apply + arguments` 的早期写法，行为保持一致。
+- 属性访问从 `param['type']` 统一为 `param.type`，增强可读性。
+- 引用路径保持不变：`import Eventable from './Eventable'`，避免大小写不一致在 Linux 环境触发路径问题。
+
 ## 功能一致性说明
 
 1. 插件注册顺序保持不变，渲染链路未改变。
@@ -57,6 +65,10 @@
 3. 前缀块插件输出结构保持一致：
    - `excel:` -> `excel-container`
    - `qrcode:` -> `qrcode-container`
+4. Eventable 事件流保持一致：
+   - `on / off / once / fire` 的触发与注销行为不变。
+   - `addEventListener / removeEventListener` 仍是别名入口。
+   - `_setEventParent` 后 `fire` 仍优先委托父事件对象。
 
 ## 质量与验证
 

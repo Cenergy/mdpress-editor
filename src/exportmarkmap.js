@@ -1,4 +1,4 @@
-const TEMPLATE = `
+const HTML_TEMPLATE = `
 <!DOCTYPE html>
 <html>
   <meta charset="UTF-8">
@@ -39,5 +39,5 @@ const TEMPLATE = `
 </html>
 `;
 export function exportMarkMapHTML(data) {
-    return TEMPLATE.replaceAll('{data}', data);
+    return HTML_TEMPLATE.replaceAll('{data}', data);
 }

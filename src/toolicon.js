@@ -14,17 +14,17 @@ export class ToolIcon {
         const { icon, title, position } = options;
         const dom = createDom('i');
         const className = options.className || '';
-        let clazzName = `item iconfont ${icon}`;
+        let iconClassName = `item iconfont ${icon}`;
         if (position === 'right') {
-            clazzName += ' icon-right';
+            iconClassName += ' icon-right';
         }
         if (position === 'left') {
-            clazzName += ' icon-left';
+            iconClassName += ' icon-left';
         }
         if (className) {
-            clazzName = `${className} ${clazzName}`;
+            iconClassName = `${className} ${iconClassName}`;
         }
-        dom.className = clazzName;
+        dom.className = iconClassName;
         dom.title = title;
         dom.parent = this;
         // dom.getEditor = () => {

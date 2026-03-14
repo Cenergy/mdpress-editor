@@ -1,4 +1,8 @@
 
+function getDataLineNumber(node) {
+    return parseInt(node.getAttribute('data-line'));
+}
+
 export function calScroll(editor, dom) {
     const ranges = editor.getVisibleRanges();
     if (!ranges.length) {
@@ -11,7 +15,7 @@ export function calScroll(editor, dom) {
     let nextTarget = null;
     for (let i = 0; i < children.length; i++) {
         const child = children[i];
-        const dataLine = parseInt(child.getAttribute('data-line'));
+        const dataLine = getDataLineNumber(child);
         if (isNaN(dataLine)) {
             continue;
         }
@@ -25,10 +29,10 @@ export function calScroll(editor, dom) {
     if (!target) {
         return 0;
     }
-    const targetLine = parseInt(target.getAttribute('data-line'));
+    const targetLine = getDataLineNumber(target);
     let offset = 0;
     if (nextTarget) {
-        const nextLine = parseInt(nextTarget.getAttribute('data-line'));
+        const nextLine = getDataLineNumber(nextTarget);
         const lineDiff = nextLine - targetLine;
         const heightDiff = nextTarget.offsetTop - target.offsetTop;
         const lineOffset = startLineNumber - targetLine;
@@ -56,13 +60,13 @@ export function calEditorScroll(dom) {
     if (!target) {
         return 1;
     }
-    const targetLine = parseInt(target.getAttribute('data-line'));
+    const targetLine = getDataLineNumber(target);
     if (isNaN(targetLine)) {
         return;
     }
     let offsetLine = 0;
     if (nextTarget) {
-        const nextLine = parseInt(nextTarget.getAttribute('data-line'));
+        const nextLine = getDataLineNumber(nextTarget);
         if (!isNaN(nextLine)) {
             const lineDiff = nextLine - targetLine;
             const heightDiff = nextTarget.offsetTop - target.offsetTop;

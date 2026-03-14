@@ -163,7 +163,7 @@ export function createMarkdown() {
         highlight: function (str, lang) {
             lang = lang || '';
             lang = lang.toLowerCase();
-            if (lang === 'ketex') {
+            if (lang === 'ketex' || lang === 'katex') {
                 return katexRender(str);
             } else if (lang === 'mermaid') {
                 return mermaidRender(str);

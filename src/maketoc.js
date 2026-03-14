@@ -84,7 +84,7 @@ function createHierarchy(headers, minLevel) {
             }
             object.parent = ref;
         } else {
-            console.error('unkown toc path');
+            console.error('unknown toc path');
         }
         object.parent.nodes.push(object);
         previousNode = object;

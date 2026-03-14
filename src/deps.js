@@ -229,10 +229,12 @@ export function getMonaco() {
 }
 
 // Highlight.js
-export function registerHightLight() {}
-export function getHightLight() {
+export function registerHighlight() {}
+export function getHighlight() {
     return window.hljs || hljs;
 }
+export const registerHightLight = registerHighlight;
+export const getHightLight = getHighlight;
 
 export function registerPrettier(prettier) {
     prettierObj = prettier;
@@ -348,14 +350,14 @@ export function ensureXLSX() {
 }
 
 // X_spreadsheet
-export function registerX_spreadsheet(xSpreadsheet) {
+export function registerXSpreadsheet(xSpreadsheet) {
     xSpreadsheetObj = xSpreadsheet;
     return xSpreadsheetObj;
 }
-export function getX_spreadsheet() {
+export function getXSpreadsheet() {
     return window.x_spreadsheet || xSpreadsheetObj;
 }
-export function ensureX_spreadsheet() {
+export function ensureXSpreadsheet() {
     if (window.x_spreadsheet) {
         return Promise.resolve(window.x_spreadsheet);
     }
@@ -364,6 +366,9 @@ export function ensureX_spreadsheet() {
     }
     return xSpreadsheetLoader();
 }
+export const registerX_spreadsheet = registerXSpreadsheet;
+export const getX_spreadsheet = getXSpreadsheet;
+export const ensureX_spreadsheet = ensureXSpreadsheet;
 
 // FlowChart
 export function registerFlowChart(flowchart) {

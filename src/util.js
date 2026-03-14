@@ -70,8 +70,8 @@ export function createDom(tagName) {
     return document.createElement(tagName);
 }
 
-export const on = (target, event, hanlder) => {
-    target.addEventListener(event, hanlder);
+export const on = (target, event, handler) => {
+    target.addEventListener(event, handler);
 };
 
 export function createDialog() {

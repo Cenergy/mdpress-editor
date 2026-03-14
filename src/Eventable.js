@@ -1,13 +1,11 @@
 import { extend, isString, isNil, stopPropagation } from './util';
-// import { stopPropagation } from './util';
 /**
  * This provides methods used for event handling. It's a mixin and not meant to be used directly.
  * @mixin Eventable
  */
 
-const Eventable = Base =>
-
-    class extends Base {
+const Eventable = (Base = class {}) =>
+    class EventableMixin extends Base {
         /**
          * Register a handler function to be called whenever this event is fired.
          *
@@ -57,8 +55,8 @@ const Eventable = Base =>
                     }
                 }
                 handlerChain.push({
-                    handler: handler,
-                    context: context
+                    handler,
+                    context
                 });
             }
             return this;
@@ -73,8 +71,8 @@ const Eventable = Base =>
          * @return {} this
          * @function Eventable.addEventListener
          */
-        addEventListener() {
-            return this.on.apply(this, arguments);
+        addEventListener(...args) {
+            return this.on(...args);
         }
 
         /**
@@ -99,9 +97,9 @@ const Eventable = Base =>
                 }
                 return this._switch('on', once);
             }
-            const evetTypes = eventTypes.split(' ');
-            for (let i = 0, l = evetTypes.length; i < l; i++) {
-                this.on(evetTypes[i], this._wrapOnceHandler(evetTypes[i], handler, context));
+            const eventTypeList = eventTypes.split(' ');
+            for (let i = 0, l = eventTypeList.length; i < l; i++) {
+                this.on(eventTypeList[i], this._wrapOnceHandler(eventTypeList[i], handler, context));
             }
             return this;
         }
@@ -162,15 +160,15 @@ const Eventable = Base =>
          * @return {} this
          * @function Eventable.removeEventListener
          */
-        removeEventListener() {
-            return this.off.apply(this, arguments);
+        removeEventListener(...args) {
+            return this.off(...args);
         }
 
         /**
          * Returns listener's count registered for the event type.
          *
          * @param {String} eventType        - an event type
-         * @param {Function} [hanlder=null] - listener function
+         * @param {Function} [handler=null] - listener function
          * @param {Object} [context=null]   - the context of the handler
          * @return {Number}
          * @function Eventable.listens
@@ -237,11 +235,11 @@ const Eventable = Base =>
          * @return {} this
          * @function Eventable.fire
          */
-        fire() {
+        fire(...args) {
             if (this._eventParent) {
-                return this._eventParent.fire.apply(this._eventParent, arguments);
+                return this._eventParent.fire(...args);
             }
-            return this._fire.apply(this, arguments);
+            return this._fire(...args);
         }
 
         _wrapOnceHandler(evtType, handler, context) {
@@ -318,8 +316,8 @@ const Eventable = Base =>
             if (!param) {
                 param = {};
             }
-            param['type'] = eventType;
-            param['target'] = this._eventTarget || this;
+            param.type = eventType;
+            param.target = this._eventTarget || this;
             // in case of deleting a listener in a execution, copy the handlerChain to execute.
             const queue = handlerChain.slice(0);
             let context, bubble, passed;
@@ -337,8 +335,8 @@ const Eventable = Base =>
                 }
                 // stops the event propagation if the handler returns false.
                 if (bubble === false) {
-                    if (param['domEvent']) {
-                        stopPropagation(param['domEvent']);
+                    if (param.domEvent) {
+                        stopPropagation(param.domEvent);
                     }
                 }
             }

@@ -75,6 +75,12 @@ registerPrettier(prettier);
 ...
 ```
 
+## Development Naming
+
+* Class-like modules use PascalCase file names, such as `src/Eventable.js`.
+* Keep import path case exactly the same as file names, for example: `import Eventable from './Eventable'`.
+* `Eventable` is a mixin factory and should continue to be composed via `class X extends Eventable(Base)`.
+
 ## Code highlighting
 
 Built in [highlight.js](https://github.com/highlightjs/highlight.js)  as a Code highlighting tool. If you like [shiki](https://github.com/shikijs/shiki), you can register [shiki](https://github.com/shikijs/shiki) as a Code highlighting tool
